@@ -30,6 +30,17 @@
             app:defaultValue="false" />
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="إعدادات الاختبار والخلفية">
+        <ListPreference
+            app:key="thread_count"
+            app:title="عدد الصفحات المحملة بالخلفية"
+            app:summary="حدد عدد الصفحات (1-30) لتسريع الفحص"
+            app:entries="@array/preload_pages_entries"
+            app:entryValues="@array/preload_pages_values"
+            app:defaultValue="5"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="@string/pref_category_data">
         <Preference
             app:key="manage_routers"

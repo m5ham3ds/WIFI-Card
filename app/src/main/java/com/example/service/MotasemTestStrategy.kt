@@ -16,47 +16,45 @@ object MotasemTestStrategy {
         router: RouterProfileEntity,
         webView: WebView?,
         evaluateJsSafely: suspend (String) -> String,
-        pauseCondition: suspend () -> Unit
+        pauseCondition: suspend () -> Unit,
+        isPreloaded: Boolean = false
     ): Boolean {
         return withContext(Dispatchers.Main) {
             try {
                 pauseCondition()
 
-                // Clear session
-                try {
-                    android.webkit.CookieManager.getInstance().apply {
-                        removeAllCookies(null)
-                        flush()
-                    }
-                    android.webkit.WebStorage.getInstance().deleteAllData()
-                } catch (_: Exception) {}
-
-                webView?.clearCache(true)
-                webView?.clearHistory()
-                webView?.clearFormData()
-
                 val url = "${router.protocol}://${router.ip}${router.loginPath}"
-                Timber.d("[Motasem] Loading url: $url")
-                
-                var pageLoadedDeferred: CompletableDeferred<Unit>? = null
-                
-                webView?.stopLoading()
-                delay(300)
 
-                pageLoadedDeferred = CompletableDeferred()
-                
-                // Override the WebViewClient locally if needed? No, we rely on the host TestService's client which has been fixed to ignore ERR_ABORTED.
-                val hostClient = webView?.webViewClient 
-                
-                // We must use evaluateJsSafely since we need the deferred to be completed by the host service.
-                // Wait, if we are returning and doing it in TestService, the host service manages pageLoadedDeferred!
-                // To keep it clean, maybe we shouldn't separate EVERYTHING to this file if it breaks TestService state, but we can pass the deferred logic.
-                
-                // Let's just use evaluateJsSafely and a hard delay to wait for page to load, since Motasem pages are very light!
-                webView?.loadUrl(url)
-                
-                // Wait firmly for 2.5 seconds to ensure page loaded (Motasem is local router)
-                delay(2500)
+                if (!isPreloaded) {
+                    // Clear session
+                    try {
+                        android.webkit.CookieManager.getInstance().apply {
+                            removeAllCookies(null)
+                            flush()
+                        }
+                        android.webkit.WebStorage.getInstance().deleteAllData()
+                    } catch (_: Exception) {}
+
+                    webView?.clearCache(true)
+                    webView?.clearHistory()
+                    webView?.clearFormData()
+
+                    Timber.d("[Motasem] Loading url: $url")
+                    
+                    var pageLoadedDeferred: CompletableDeferred<Unit>? = null
+                    
+                    webView?.stopLoading()
+                    delay(300)
+
+                    pageLoadedDeferred = CompletableDeferred()
+                    
+                    webView?.loadUrl(url)
+                    
+                    // Wait firmly for 2.5 seconds to ensure page loaded (Motasem is local router)
+                    delay(2500)
+                } else {
+                    Timber.d("[Motasem] Using preloaded page, skipping loadUrl")
+                }
                 
                 // --- PRE-FLIGHT CHECK ---
                 // If the user's phone was ALREADY logged into the router from outside the app,

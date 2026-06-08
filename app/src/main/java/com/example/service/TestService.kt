@@ -67,65 +67,68 @@ class TestService : Service(), KoinComponent {
     private val appPreferences: AppPreferences by inject()
 
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    private var webView: WebView? = null
+    private val webViewPool = mutableListOf<WebView>()
+    private val pageLoadedDeferredMap = mutableMapOf<WebView, CompletableDeferred<Unit>?>()
+    private var currentWebViewIndex = 0
+
+    private val activeWebView: WebView?
+        get() = webViewPool.getOrNull(currentWebViewIndex)
+
     private var testJob: Job? = null
     private var screenshotJob: Job? = null
     private val binder = ServiceBinder(this)
     private lateinit var notificationHelper: NotificationHelper
 
-    private var pageLoadedDeferred: CompletableDeferred<Unit>? = null
     private var retryDeferred: CompletableDeferred<Boolean>? = null
 
     override fun onCreate() {
         super.onCreate()
         _isRunning.value = true
         notificationHelper = NotificationHelper(this)
+    }
 
-        try {
-            webView = WebView(applicationContext).apply {
-                val dm: DisplayMetrics = resources.displayMetrics
-                layout(0, 0, dm.widthPixels, dm.heightPixels)
-                settings.apply {
-                    javaScriptEnabled = true
-                    domStorageEnabled = true
-                    mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-                    cacheMode = WebSettings.LOAD_NO_CACHE
-                    userAgentString = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36"
+    private fun createWebViewInstance(): WebView {
+        return WebView(applicationContext).apply {
+            val dm: DisplayMetrics = resources.displayMetrics
+            layout(0, 0, dm.widthPixels, dm.heightPixels)
+            settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                cacheMode = WebSettings.LOAD_NO_CACHE
+                userAgentString = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36"
+            }
+            webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    Timber.d("WebView page loaded: $url")
+                    view?.let { pageLoadedDeferredMap[it]?.complete(Unit) }
                 }
-                webViewClient = object : WebViewClient() {
-                    override fun onPageFinished(view: WebView?, url: String?) {
-                        super.onPageFinished(view, url)
-                        Timber.d("WebView page loaded: $url")
-                        pageLoadedDeferred?.complete(Unit)
-                    }
 
-                    override fun onReceivedSslError(
-                        view: WebView?, handler: SslErrorHandler?, error: SslError?
-                    ) {
-                        Timber.d("Proceeding with self-signed SSL error: ${error?.primaryError}")
-                        handler?.proceed()
-                    }
+                override fun onReceivedSslError(
+                    view: WebView?, handler: SslErrorHandler?, error: SslError?
+                ) {
+                    Timber.d("Proceeding with self-signed SSL error: ${error?.primaryError}")
+                    handler?.proceed()
+                }
 
-                    override fun onReceivedError(
-                        view: WebView?,
-                        request: WebResourceRequest?,
-                        error: WebResourceError?
-                    ) {
-                        super.onReceivedError(view, request, error)
-                        Timber.e("WebView error: ${error?.description} code: ${error?.errorCode}")
-                        if (request?.isForMainFrame == true) {
-                            if (error?.errorCode == WebViewClient.ERROR_UNKNOWN || error?.description?.contains("net::ERR_ABORTED", ignoreCase = true) == true) {
-                                Timber.d("Ignoring ERR_ABORTED for main frame")
-                                return
-                            }
-                            val errMsg = error?.description?.toString() ?: "فشل تحميل الصفحة"
-                            pageLoadedDeferred?.completeExceptionally(Exception(errMsg))
+                override fun onReceivedError(
+                    view: WebView?,
+                    request: WebResourceRequest?,
+                    error: WebResourceError?
+                ) {
+                    super.onReceivedError(view, request, error)
+                    Timber.e("WebView error: ${error?.description} code: ${error?.errorCode}")
+                    if (request?.isForMainFrame == true) {
+                        if (error?.errorCode == WebViewClient.ERROR_UNKNOWN || error?.description?.contains("net::ERR_ABORTED", ignoreCase = true) == true) {
+                            Timber.d("Ignoring ERR_ABORTED for main frame")
+                            return
                         }
+                        val errMsg = error?.description?.toString() ?: "فشل تحميل الصفحة"
+                        view?.let { pageLoadedDeferredMap[it]?.completeExceptionally(Exception(errMsg)) }
                     }
                 }
             }
-        } catch (e: Throwable) {
-            Timber.e(e, "Failed to initialize WebView in TestService. Background loop might be unavailable.")
         }
     }
 
@@ -210,15 +213,17 @@ class TestService : Service(), KoinComponent {
             try {
                 val url = "${router.protocol}://${router.ip}${router.loginPath}"
                 
-                pageLoadedDeferred = null
-                webView?.stopLoading()
+                val wv = webViewPool.firstOrNull() ?: return@withContext
+                pageLoadedDeferredMap[wv] = null
+                wv.stopLoading()
                 delay(500)
                 
-                pageLoadedDeferred = CompletableDeferred()
-                webView?.loadUrl(url)
+                val def = CompletableDeferred<Unit>()
+                pageLoadedDeferredMap[wv] = def
+                wv.loadUrl(url)
                 try {
                     kotlinx.coroutines.withTimeout(15000) {
-                        pageLoadedDeferred?.await()
+                        def.await()
                     }
                 } catch (e: Exception) {
                     Timber.e(e, "Error loading page to check logout state.")
@@ -229,12 +234,12 @@ class TestService : Service(), KoinComponent {
                 delay(1500)
                 
                 val checkJs = InjectionManager.buildCheckResultJs(router.successIndicator, router.failureIndicator, router.submitSelector, router.logoutSelector)
-                val state = evaluateJsSafely(checkJs)
+                val state = evaluateJsSafely(wv, checkJs)
                 
                 if (state == "success") {
                     Timber.d("User is already logged in prior to test! Logging out...")
                     val lJs = InjectionManager.buildLogoutJs(router.logoutSelector)
-                    evaluateJsSafely(lJs)
+                    evaluateJsSafely(wv, lJs)
                     delay(3500) // wait for logout to process
                 }
             } catch (e: Exception) {
@@ -243,9 +248,13 @@ class TestService : Service(), KoinComponent {
         }
     }
 
-    private suspend fun evaluateJsSafely(js: String): String {
+    private suspend fun evaluateJsSafely(webViewToUse: WebView? = activeWebView, js: String): String {
         return kotlin.coroutines.suspendCoroutine { continuation ->
-            webView?.evaluateJavascript(js) { res ->
+            if (webViewToUse == null) {
+                continuation.resume("unknown")
+                return@suspendCoroutine
+            }
+            webViewToUse.evaluateJavascript(js) { res ->
                 val cleanRes = res?.trim('"')?.trim() ?: "unknown"
                 continuation.resume(cleanRes)
             }
@@ -256,6 +265,8 @@ class TestService : Service(), KoinComponent {
         testJob?.cancel()
         testJob = serviceScope.launch {
             try {
+                val poolSize = kotlinx.coroutines.flow.first(appPreferences.threadCount)
+                
                 val router = withContext(Dispatchers.IO) {
                     routerRepository.getById(routerId)
                 } ?: run {
@@ -280,6 +291,33 @@ class TestService : Service(), KoinComponent {
                 // Clear state and perform logout if already logged in before we begin hitting cards
                 ensureLoggedOut(router)
 
+                val url = "${router.protocol}://${router.ip}${router.loginPath}"
+
+                // Initialize WebView Pool
+                withContext(Dispatchers.Main) {
+                    webViewPool.forEach { 
+                        it.stopLoading()
+                        it.destroy()
+                    }
+                    webViewPool.clear()
+                    pageLoadedDeferredMap.clear()
+                    
+                    for (i in 0 until poolSize) {
+                        val wv = createWebViewInstance()
+                        webViewPool.add(wv)
+                    }
+                }
+                
+                // Preload all WebViews!
+                withContext(Dispatchers.Main) {
+                    webViewPool.forEach { 
+                        it.loadUrl(url)
+                    }
+                }
+                
+                // Wait for initial preloading a bit
+                delay(2000)
+
                 cardList.forEachIndexed { index, card ->
                     while (_serviceState.value.isPaused) {
                         delay(200)
@@ -294,8 +332,13 @@ class TestService : Service(), KoinComponent {
                     notificationHelper.updateNotification(_serviceState.value)
 
                     val startTime = SystemClock.elapsedRealtime()
+                    
+                    // Assign active WebView from the rotating pool
+                    currentWebViewIndex = index % webViewPool.size
+                    val isPreloaded = poolSize > 1 // if > 1 we assume it preloaded
+
                     val result = try {
-                        testCard(card, router)
+                        testCard(card, router, isPreloaded)
                     } catch (e: kotlinx.coroutines.CancellationException) {
                         Timber.d("Test loop cancelled due to user action in error state")
                         cancelTest()
@@ -326,13 +369,24 @@ class TestService : Service(), KoinComponent {
                         notificationHelper.showResultNotification(card, true)
                         // Wait a bit to logout after success, so next card works
                         delay(1000)
-                        withContext(Dispatchers.Main) {
-                            val lJs = InjectionManager.buildLogoutJs(router.logoutSelector)
-                            evaluateJsSafely(lJs)
-                            delay(3500) // Extra time to process logout before next card
+                        val wvToLogout = activeWebView
+                        if (wvToLogout != null) {
+                            withContext(Dispatchers.Main) {
+                                val lJs = InjectionManager.buildLogoutJs(router.logoutSelector)
+                                // We use evaluateJavascript directly here to not depend on evaluateJsSafely since we are doing it manually
+                                wvToLogout.evaluateJavascript(lJs) {}
+                                delay(3500) // Extra time to process logout before next card
+                            }
                         }
                     } else {
                         _serviceState.update { it.copy(failureCount = it.failureCount + 1) }
+                    }
+
+                    // Reload the WebView so it's ready for the next rotation!
+                    withContext(Dispatchers.Main) {
+                        activeWebView?.clearHistory()
+                        activeWebView?.clearFormData()
+                        activeWebView?.loadUrl(url)
                     }
 
                     delay(delayMs)
@@ -357,62 +411,69 @@ class TestService : Service(), KoinComponent {
         }
     }
 
-    private suspend fun testCard(card: String, router: RouterProfileEntity): Boolean {
+    private suspend fun testCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean): Boolean {
         if (router.name.contains("معتصم", ignoreCase = true) || router.name.contains("motasem", ignoreCase = true)) {
-            return testMotasemCard(card, router)
+            return testMotasemCard(card, router, isPreloaded)
+        }
+        if (router.name.contains("بيلو", ignoreCase = true) || router.name.contains("bello", ignoreCase = true)) {
+            return testBelloCard(card, router, isPreloaded)
+        }
+        if (router.name.contains("اباشا", ignoreCase = true) || router.name.contains("abasha", ignoreCase = true) || router.name.contains("الباشا", ignoreCase = true)) {
+            return testAbashaCard(card, router, isPreloaded)
         }
         
         return withContext(Dispatchers.Main) {
             try {
                 // Load Login page
                 val url = "${router.protocol}://${router.ip}${router.loginPath}"
-                Timber.d("Loading URL: $url")
+                Timber.d("Testing URL: $url preloaded: $isPreloaded")
                 
-                // Keep cookies logic inside loop as backup, but ensureLoggedOut handled the state initially.
-                try {
-                    android.webkit.CookieManager.getInstance().apply {
-                        removeAllCookies(null)
-                        flush()
+                if (!isPreloaded) {
+                    try {
+                        android.webkit.CookieManager.getInstance().apply {
+                            removeAllCookies(null)
+                            flush()
+                        }
+                        android.webkit.WebStorage.getInstance().deleteAllData()
+                    } catch (e: Exception) {
+                        Timber.e(e, "Failed to clear WebView data before testing card: $card")
                     }
-                    android.webkit.WebStorage.getInstance().deleteAllData()
-                } catch (e: Exception) {
-                    Timber.e(e, "Failed to clear WebView data before testing card: $card")
-                }
 
-                // Clear any old deferred to avoid race conditions with previous page loads
-                pageLoadedDeferred = null
-                webView?.stopLoading()
-                delay(500)
+                    // Clear any old deferred to avoid race conditions with previous page loads
+                    pageLoadedDeferredMap[activeWebView!!] = null
+                    activeWebView?.stopLoading()
+                    delay(500)
 
-                pageLoadedDeferred = CompletableDeferred()
-                webView?.loadUrl(url)
-                
-                // Wait for page finish
-                try {
-                    kotlinx.coroutines.withTimeout(15000) {
-                        pageLoadedDeferred?.await()
-                    }
-                } catch (e: Exception) {
-                    if (e is kotlinx.coroutines.CancellationException) throw e
-                    val errMsg = e.localizedMessage ?: "فشل تحميل الصفحة"
-                    _serviceState.update { it.copy(status = "LOAD_ERROR", error = errMsg) }
-                    notificationHelper.updateNotification(_serviceState.value)
+                    val def = CompletableDeferred<Unit>()
+                    pageLoadedDeferredMap[activeWebView!!] = def
+                    activeWebView?.loadUrl(url)
                     
-                    val retry = CompletableDeferred<Boolean>()
-                    retryDeferred = retry
-                    val shouldRetry = retry.await()
-                    retryDeferred = null
-                    
-                    if (shouldRetry) {
-                        _serviceState.update { it.copy(status = "RUNNING", error = null) }
+                    // Wait for page finish
+                    try {
+                        kotlinx.coroutines.withTimeout(15000) {
+                            def.await()
+                        }
+                    } catch (e: Exception) {
+                        if (e is kotlinx.coroutines.CancellationException) throw e
+                        val errMsg = e.localizedMessage ?: "فشل تحميل الصفحة"
+                        _serviceState.update { it.copy(status = "LOAD_ERROR", error = errMsg) }
                         notificationHelper.updateNotification(_serviceState.value)
-                        return@withContext testCard(card, router)
-                    } else {
-                        throw kotlinx.coroutines.CancellationException("User cancelled from retry error dialog")
+                        
+                        val retry = CompletableDeferred<Boolean>()
+                        retryDeferred = retry
+                        val shouldRetry = retry.await()
+                        retryDeferred = null
+                        
+                        if (shouldRetry) {
+                            _serviceState.update { it.copy(status = "RUNNING", error = null) }
+                            notificationHelper.updateNotification(_serviceState.value)
+                            return@withContext testCard(card, router, isPreloaded)
+                        } else {
+                            throw kotlinx.coroutines.CancellationException("User cancelled from retry error dialog")
+                        }
                     }
+                    delay(1000)
                 }
-                
-                delay(1000)
 
                 // Ensure we are actually on a page with a login form.
                 // If it's a redirect / logout conformation page with a "تسجيل الدخول" button but no form, click that button and wait.
@@ -543,15 +604,40 @@ class TestService : Service(), KoinComponent {
         }
     }
 
-    private suspend fun testMotasemCard(card: String, router: RouterProfileEntity): Boolean {
+    private suspend fun testMotasemCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean): Boolean {
+        val currentWv = activeWebView
         return MotasemTestStrategy.testMotasemCard(
             card = card,
             router = router,
-            webView = webView,
-            evaluateJsSafely = ::evaluateJsSafely
-        ) {
-            while (_serviceState.value.isPaused) { kotlinx.coroutines.delay(500) }
-        }
+            webView = currentWv,
+            evaluateJsSafely = { js -> evaluateJsSafely(currentWv, js) },
+            pauseCondition = { while (_serviceState.value.isPaused) { kotlinx.coroutines.delay(500) } },
+            isPreloaded = isPreloaded
+        )
+    }
+
+    private suspend fun testBelloCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean): Boolean {
+        val currentWv = activeWebView
+        return BelloTestStrategy.testBelloCard(
+            card = card,
+            router = router,
+            webView = currentWv,
+            evaluateJsSafely = { js -> evaluateJsSafely(currentWv, js) },
+            pauseCondition = { while (_serviceState.value.isPaused) { kotlinx.coroutines.delay(500) } },
+            isPreloaded = isPreloaded
+        )
+    }
+
+    private suspend fun testAbashaCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean): Boolean {
+        val currentWv = activeWebView
+        return AbashaTestStrategy.testAbashaCard(
+            card = card,
+            router = router,
+            webView = currentWv,
+            evaluateJsSafely = { js -> evaluateJsSafely(currentWv, js) },
+            pauseCondition = { while (_serviceState.value.isPaused) { kotlinx.coroutines.delay(500) } },
+            isPreloaded = isPreloaded
+        )
     }
 
     private fun cancelTest() {
