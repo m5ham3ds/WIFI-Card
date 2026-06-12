@@ -32,11 +32,14 @@ jobs:
         if [ -f debug.keystore.base64 ]; then
           echo "Decoding debug.keystore.base64..."
           base64 --decode debug.keystore.base64 > debug.keystore
-          ls -l debug.keystore
+        elif [ ! -z "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" ]; then
+          echo "Decoding from GitHub Secret..."
+          echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 --decode > debug.keystore
         else
-          echo "debug.keystore.base64 not found!"
-          exit 1
+          echo "No keystore found. Generating temporary debug keystore..."
+          keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -storepass android -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
         fi
+        ls -l debug.keystore
 
     - name: Build with Gradle
       run: gradle assembleDebug --no-daemon
