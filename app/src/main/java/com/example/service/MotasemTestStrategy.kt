@@ -56,16 +56,6 @@ object MotasemTestStrategy {
                     Timber.d("[Motasem] Using preloaded page, skipping loadUrl")
                 }
 
-                // Wait for form to be ready
-                var formRetries = 0
-                val checkReadyJs = "(function() { return (document.querySelector('input[name=\"username\"]') || document.querySelector('#username') || (document.login && document.login.username)) ? 'ready' : 'not_ready'; })();"
-                while (formRetries < 10) {
-                    val readyState = evaluateJsSafely(checkReadyJs)
-                    if (readyState == "ready") break
-                    delay(1000)
-                    formRetries++
-                }
-                
                 // --- PRE-FLIGHT CHECK ---
                 // If the user's phone was ALREADY logged into the router from outside the app,
                 // the router will redirect the login URL to the status/logout page automatically!
@@ -98,6 +88,16 @@ object MotasemTestStrategy {
                     // Optional: hit the login URL again just to be sure we are back
                     webView?.loadUrl(url)
                     delay(2500)
+                }
+
+                // Wait for form to be ready
+                var formRetries = 0
+                val checkReadyJs = "(function() { return (document.querySelector('input[name=\"username\"]') || document.querySelector('#username') || (document.login && document.login.username)) ? 'ready' : 'not_ready'; })();"
+                while (formRetries < 10) {
+                    val readyState = evaluateJsSafely(checkReadyJs)
+                    if (readyState == "ready") break
+                    delay(1000)
+                    formRetries++
                 }
                 
                 // Inject specific Motasem script snippet from his old project
