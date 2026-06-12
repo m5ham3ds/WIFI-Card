@@ -108,10 +108,10 @@ object BelloTestStrategy {
                             }
                         }
                         
-                        var submitBtn = document.querySelector('button[type="submit"], input[type="submit"], .submit button');
+                        var submitBtn = document.querySelector('button[type="submit"], input[type="submit"], .submit button, .btn-main');
                         if (submitBtn) {
                             submitBtn.click();
-                            return 'injected_click_fallback';
+                            return 'injected_click_processed';
                         }
                         
                         var forms = document.getElementsByTagName('form');
@@ -135,10 +135,10 @@ object BelloTestStrategy {
                     var html = document.documentElement.innerHTML;
                     var bodyText = document.body.innerText || '';
                     if (bodyText.indexOf('تفاصيل الأستخدام') !== -1 || bodyText.indexOf('الوقت المتبقي') !== -1 || bodyText.indexOf('الرصيد المتبقي') !== -1) return 'success';
-                    if (html.indexOf('تسجيل الخروج') !== -1 || bodyText.indexOf('تسجيل الخروج') !== -1) return 'success';
-                    if (document.querySelector('form[action*="logout"]') || document.querySelector('a[href*="logout"]')) return 'success';
+                    if (html.indexOf('تسجيل الخروج') !== -1 || bodyText.indexOf('تسجيل الخروج') !== -1 || bodyText.indexOf('logout') !== -1) return 'success';
+                    if (document.querySelector('form[action*="logout"]') || document.querySelector('a[href*="logout"]') || document.querySelector('.info.blue')) return 'success';
                     
-                    if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('Incomplete') !== -1) return 'failure';
+                    if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('Incomplete') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';
                     
                     return 'unknown';
                 })();

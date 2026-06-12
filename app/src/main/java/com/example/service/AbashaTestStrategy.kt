@@ -109,10 +109,16 @@ object AbashaTestStrategy {
                             }
                         }
                         
-                        var submitBtn = document.querySelector('input[type="submit"], button[type="submit"], input[value="اتصال"], .button-submit');
+                        var submitBtn = document.querySelector('input[type="submit"], button[type="submit"], input[value="اتصال"], .button-submit, .btn-main');
                         if (submitBtn) {
-                            submitBtn.click();
-                            return 'injected_click_fallback';
+                            if (submitBtn.tagName.toLowerCase() === 'button' || submitBtn.type === 'submit') {
+                                submitBtn.click();
+                            } else {
+                                // Fallback for some strange implementations
+                                var form = document.querySelector('form[name="login"]') || document.forms[0];
+                                if (form) form.submit();
+                            }
+                            return 'injected_click_processed';
                         }
                         
                         var forms = document.getElementsByTagName('form');
