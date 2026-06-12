@@ -23,6 +23,8 @@ object AbashaTestStrategy {
             try {
                 pauseCondition()
 
+                val url = "${router.protocol}://${router.ip}${router.loginPath}"
+
                 if (!isPreloaded) {
                     try {
                         android.webkit.CookieManager.getInstance().apply {
@@ -36,7 +38,6 @@ object AbashaTestStrategy {
                     webView?.clearHistory()
                     webView?.clearFormData()
 
-                    val url = "${router.protocol}://${router.ip}${router.loginPath}"
                     Timber.d("[Abasha] Loading url: $url")
                     
                     webView?.stopLoading()
@@ -44,10 +45,9 @@ object AbashaTestStrategy {
 
                     webView?.loadUrl(url)
                     
-                    // Wait firmly for 2.5 seconds to ensure page loaded
                     delay(2500)
                 } else {
-                    Timber.d("[Abasha] Using preloaded page, skipping loadUrl")
+                    Timber.d("[Abasha] Using preloaded page")
                 }
                 
                 // PRE-FLIGHT CHECK
@@ -75,7 +75,8 @@ object AbashaTestStrategy {
                     evaluateJsSafely(forceLogoutJs)
                     
                     delay(3000) 
-                    webView?.loadUrl(url)
+                    val loginUrl = "${router.protocol}://${router.ip}${router.loginPath}"
+                    webView?.loadUrl(loginUrl)
                     delay(2500)
                 }
                 

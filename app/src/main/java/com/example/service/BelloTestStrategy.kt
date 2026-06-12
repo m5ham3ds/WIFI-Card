@@ -45,10 +45,9 @@ object BelloTestStrategy {
 
                     webView?.loadUrl(url)
                     
-                    // Wait firmly for 2.5 seconds to ensure page loaded
                     delay(2500)
                 } else {
-                    Timber.d("[Bello] Using preloaded page, skipping loadUrl")
+                    Timber.d("[Bello] Using preloaded page")
                 }
                 
                 // PRE-FLIGHT CHECK
@@ -75,7 +74,8 @@ object BelloTestStrategy {
                     evaluateJsSafely(forceLogoutJs)
                     
                     delay(3000) 
-                    webView?.loadUrl(url)
+                    val loginUrl = "${router.protocol}://${router.ip}${router.loginPath}"
+                    webView?.loadUrl(loginUrl)
                     delay(2500)
                 }
                 

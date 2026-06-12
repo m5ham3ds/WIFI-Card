@@ -42,7 +42,10 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
     val vibrateOnSuccess: Flow<Boolean> = safeData.map { it[KEY_VIBRATE] ?: true }
     val soundOnSuccess: Flow<Boolean> = safeData.map { it[KEY_SOUND] ?: false }
     val autoExport: Flow<Boolean> = safeData.map { it[KEY_AUTO_EXPORT] ?: false }
-    val threadCount: Flow<Int> = safeData.map { it[KEY_THREAD_COUNT] ?: 3 }
+    val threadCount: Flow<Int> = safeData.map { prefs ->
+        val v = prefs[stringPreferencesKey("thread_count")] ?: "3"
+        v.toIntOrNull() ?: 3
+    }
     val defaultRouterId: Flow<Long> = safeData.map { it[KEY_DEFAULT_ROUTER_ID] ?: 0L }
     val appLanguage: Flow<String> = safeData.map { it[KEY_APP_LANGUAGE] ?: "system" }
     
