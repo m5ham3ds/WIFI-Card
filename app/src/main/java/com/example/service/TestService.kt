@@ -111,6 +111,27 @@ class TestService : Service(), KoinComponent {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
                     Timber.d("WebView page loaded: $url")
+                    
+                    // Auto-click reload button if present on page load
+                    val autoReloadJs = """
+                        (function() {
+                            var buttons = document.querySelectorAll('button, a, input[type="button"]');
+                            for (var i = 0; i < buttons.length; i++) {
+                                var text = (buttons[i].innerText || buttons[i].value || '').toLowerCase();
+                                if (text.indexOf('إعادة تحميل') !== -1 || text.indexOf('retry') !== -1 || text.indexOf('reload') !== -1 || text.indexOf('تحديث') !== -1) {
+                                    buttons[i].click();
+                                    return true;
+                                }
+                            }
+                            return false;
+                        })();
+                    """.trimIndent()
+                    view?.evaluateJavascript(autoReloadJs) { result ->
+                        if (result == "true") {
+                            Timber.d("Auto-clicked reload button")
+                        }
+                    }
+
                     view?.let { pageLoadedDeferredMap[it]?.complete(Unit) }
                 }
 
@@ -357,11 +378,39 @@ class TestService : Service(), KoinComponent {
                             val startTime = SystemClock.elapsedRealtime()
                             val result = try {
                                 // Double check page is loaded (wait if needed)
-                                val def = pageLoadedDeferredMap[webView]
+                                var def = pageLoadedDeferredMap[webView]
                                 if (def != null) {
                                     try {
-                                        kotlinx.coroutines.withTimeout(15000) { def.await() }
+                                        kotlinx.coroutines.withTimeout(20000) { def.await() }
+                                    } catch (_: Exception) {
+                                        Timber.w("Timeout waiting for initial page load, trying to proceed anyway")
+                                    }
+                                }
+                                
+                                // Extra safety: wait for DOM to be stable and check for reload buttons again
+                                delay(1500)
+                                val checkReloadJs = """
+                                    (function() {
+                                        var buttons = document.querySelectorAll('button, a, input[type="button"]');
+                                        for (var i = 0; i < buttons.length; i++) {
+                                            var text = (buttons[i].innerText || buttons[i].value || '').toLowerCase();
+                                            if (text.indexOf('إعادة تحميل') !== -1 || text.indexOf('retry') !== -1 || text.indexOf('reload') !== -1) {
+                                                buttons[i].click();
+                                                return 'clicked_reload';
+                                            }
+                                        }
+                                        return 'ok';
+                                    })();
+                                """.trimIndent()
+                                val reloadStatus = evaluateJsSafely(webView, checkReloadJs)
+                                if (reloadStatus == "clicked_reload") {
+                                    Timber.d("Clicked reload button during test loop, waiting for reload...")
+                                    val newDef = CompletableDeferred<Unit>()
+                                    pageLoadedDeferredMap[webView] = newDef
+                                    try {
+                                        kotlinx.coroutines.withTimeout(15000) { newDef.await() }
                                     } catch (_: Exception) {}
+                                    delay(1000)
                                 }
                                 
                                 testCard(card, router, true, webView)

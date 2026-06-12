@@ -49,6 +49,16 @@ object BelloTestStrategy {
                 } else {
                     Timber.d("[Bello] Using preloaded page")
                 }
+
+                // Wait for form to be ready
+                var formRetries = 0
+                val checkReadyJs = "(function() { return (document.querySelector('input[name=\"username\"]') || document.querySelector('#uname')) ? 'ready' : 'not_ready'; })();"
+                while (formRetries < 10) {
+                    val readyState = evaluateJsSafely(checkReadyJs)
+                    if (readyState == "ready") break
+                    delay(1000)
+                    formRetries++
+                }
                 
                 // PRE-FLIGHT CHECK
                 val preFlightJs = """

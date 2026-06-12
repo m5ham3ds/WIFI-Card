@@ -49,6 +49,16 @@ object AbashaTestStrategy {
                 } else {
                     Timber.d("[Abasha] Using preloaded page")
                 }
+
+                // Wait for form to be ready
+                var formRetries = 0
+                val checkReadyJs = "(function() { return document.querySelector('input[name=\"username\"]') ? 'ready' : 'not_ready'; })();"
+                while (formRetries < 10) {
+                    val readyState = evaluateJsSafely(checkReadyJs)
+                    if (readyState == "ready") break
+                    delay(1000)
+                    formRetries++
+                }
                 
                 // PRE-FLIGHT CHECK
                 val preFlightJs = """
