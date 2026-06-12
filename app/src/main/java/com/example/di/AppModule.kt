@@ -46,6 +46,10 @@ val appModule = module {
                         "INSERT INTO router_profiles (name, ip, protocol, username, password, login_path, username_selector, password_selector, submit_selector, logout_selector, success_indicator, failure_indicator, is_active, is_default, created_at, auth_type, md5_salt) " +
                         "VALUES ('بيلو', 'www.bello.com', 'http', 'admin', '', '/login', '#uname', 'input[name=password]', 'button[type=submit]', 'button[type=submit]', 'id=\"timeLeft\"', 'خطأ', 1, 0, " + System.currentTimeMillis() + ", 'FORM', '')"
                     )
+                    db.execSQL(
+                        "INSERT INTO router_profiles (name, ip, protocol, username, password, login_path, username_selector, password_selector, submit_selector, logout_selector, success_indicator, failure_indicator, is_active, is_default, created_at, auth_type, md5_salt) " +
+                        "VALUES ('شبكة الباشا', 'www.Abasha.com', 'http', 'admin', '', '/login', 'input[name=username]', 'input[name=password]', 'input[type=submit]', 'form[id=mForm]', 'MikroTicket Status', 'خطأ', 1, 0, " + System.currentTimeMillis() + ", 'FORM', '')"
+                    )
                 } catch (e: Exception) {
                     timber.log.Timber.e(e, "Failed to prepopulate default router in database onCreate")
                 }
