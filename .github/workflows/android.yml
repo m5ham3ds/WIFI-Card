@@ -19,23 +19,14 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: gradle
 
-    - name: Download Gradle Wrapper Jar if missing or invalid
-      run: |
-        mkdir -p gradle/wrapper
-        if [ ! -f gradle/wrapper/gradle-wrapper.jar ] || [ ! -s gradle/wrapper/gradle-wrapper.jar ] || [ $(wc -c < gradle/wrapper/gradle-wrapper.jar) -lt 10000 ]; then
-          echo "gradle-wrapper.jar is missing, empty, or corrupted. Downloading from official Gradle GitHub..."
-          curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.9.0/gradle/wrapper/gradle-wrapper.jar
-        else
-          echo "gradle-wrapper.jar exists and is valid."
-        fi
-
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: '9.3.1'
 
     - name: Build with Gradle
-      run: ./gradlew assembleDebug
+      run: gradle assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
