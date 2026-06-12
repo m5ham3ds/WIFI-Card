@@ -89,17 +89,26 @@ object BelloTestStrategy {
                         if (u) {
                             u.value = cardValue;
                             u.dispatchEvent(new Event('input', { bubbles: true }));
+                            u.dispatchEvent(new Event('change', { bubbles: true }));
                         }
                         
                         var p = document.querySelector('input[name="password"]');
-                        if (p) { p.value = ''; }
+                        if (p) { 
+                            p.value = ''; 
+                            p.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
                         
                         // Try doLogin() if exists
                         if (typeof doLogin === 'function') {
-                            try { doLogin(); return 'injected_dologin'; } catch (err) {}
+                            try { 
+                                doLogin(); 
+                                return 'injected_dologin'; 
+                            } catch (err) {
+                                console.error('doLogin failed', err);
+                            }
                         }
                         
-                        var submitBtn = document.querySelector('button[type="submit"], input[type="submit"]');
+                        var submitBtn = document.querySelector('button[type="submit"], input[type="submit"], .submit button');
                         if (submitBtn) {
                             submitBtn.click();
                             return 'injected_click_fallback';
@@ -127,8 +136,9 @@ object BelloTestStrategy {
                     var bodyText = document.body.innerText || '';
                     if (bodyText.indexOf('تفاصيل الأستخدام') !== -1 || bodyText.indexOf('الوقت المتبقي') !== -1 || bodyText.indexOf('الرصيد المتبقي') !== -1) return 'success';
                     if (html.indexOf('تسجيل الخروج') !== -1 || bodyText.indexOf('تسجيل الخروج') !== -1) return 'success';
+                    if (document.querySelector('form[action*="logout"]') || document.querySelector('a[href*="logout"]')) return 'success';
                     
-                    if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1) return 'failure';
+                    if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('Incomplete') !== -1) return 'failure';
                     
                     return 'unknown';
                 })();

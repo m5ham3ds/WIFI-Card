@@ -90,17 +90,26 @@ object AbashaTestStrategy {
                         if (u) {
                             u.value = cardValue;
                             u.dispatchEvent(new Event('input', { bubbles: true }));
+                            u.dispatchEvent(new Event('change', { bubbles: true }));
                         }
                         
                         var p = document.querySelector('input[name="password"]');
-                        if (p) { p.value = ''; }
+                        if (p) { 
+                            p.value = ''; 
+                            p.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
                         
                         // Try doLogin() if exists
                         if (typeof doLogin === 'function') {
-                            try { doLogin(); return 'injected_dologin'; } catch (err) {}
+                            try { 
+                                doLogin(); 
+                                return 'injected_dologin'; 
+                            } catch (err) {
+                                console.error('doLogin failed', err);
+                            }
                         }
                         
-                        var submitBtn = document.querySelector('input[type="submit"], button[type="submit"], input[value="اتصال"]');
+                        var submitBtn = document.querySelector('input[type="submit"], button[type="submit"], input[value="اتصال"], .button-submit');
                         if (submitBtn) {
                             submitBtn.click();
                             return 'injected_click_fallback';
@@ -129,7 +138,8 @@ object AbashaTestStrategy {
                     var html = document.documentElement.innerHTML;
                     var bodyText = document.body.innerText || '';
                     if (html.indexOf('MikroTicket Status') !== -1) return 'success';
-                    if (bodyText.indexOf('عنوان IP') !== -1 || bodyText.indexOf('تنزيل') !== -1 || bodyText.indexOf('وقت الاتصال') !== -1) return 'success';
+                    if (bodyText.indexOf('عنوان IP') !== -1 || bodyText.indexOf('تنزيل') !== -1 || bodyText.indexOf('رفع') !== -1 || bodyText.indexOf('وقت الاتصال') !== -1) return 'success';
+                    if (document.querySelector('form[id="mForm"]') || document.querySelector('form[action*="logout"]')) return 'success';
                     
                     if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';
                     
