@@ -22,8 +22,10 @@ object InjectionManager {
                 
                 function triggerEvents(el) {
                     if(!el) return;
-                    el.dispatchEvent(new Event('input', {bubbles: true}));
-                    el.dispatchEvent(new Event('change', {bubbles: true}));
+                    try {
+                        var ev1 = document.createEvent('Event'); ev1.initEvent('input', true, true); el.dispatchEvent(ev1);
+                        var ev2 = document.createEvent('Event'); ev2.initEvent('change', true, true); el.dispatchEvent(ev2);
+                    } catch(e) {}
                 }
                 
                 var uFound = false, pFound = false, sFound = null;
@@ -54,10 +56,13 @@ object InjectionManager {
                         s.click();
                     } else if (uNodes.length > 0 && uNodes[0].form) {
                         // dispatch submit event to trigger onsubmit handlers before form.submit()
-                        var evt = new Event('submit', {bubbles: true, cancelable: true});
-                        if (uNodes[0].form.dispatchEvent(evt)) {
-                            uNodes[0].form.submit();
-                        }
+                        try {
+                            var evt = document.createEvent('Event');
+                            evt.initEvent('submit', true, true);
+                            if (uNodes[0].form.dispatchEvent(evt)) {
+                                uNodes[0].form.submit();
+                            }
+                        } catch(e) { uNodes[0].form.submit(); }
                     } else {
                         var anyBtn = document.querySelector('form button, .submit button');
                         if (anyBtn) anyBtn.click();

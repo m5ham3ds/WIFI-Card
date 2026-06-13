@@ -391,6 +391,7 @@ class TestService : Service(), KoinComponent {
                                 delay(1500)
                                 val checkReloadJs = """
                                     (function() {
+                                        if (document.readyState !== 'complete') return 'not_ready';
                                         var buttons = document.querySelectorAll('button, a, input[type="button"]');
                                         for (var i = 0; i < buttons.length; i++) {
                                             var text = (buttons[i].innerText || buttons[i].value || '').toLowerCase();
@@ -544,6 +545,7 @@ class TestService : Service(), KoinComponent {
 
                 val ensureFormJs = """
                 (function() {
+                    if (document.readyState !== 'complete') return 'not_ready';
                     var u1 = document.querySelector('input[name="username"]');
                     var u2 = document.querySelector('input[type="text"]:not([type="hidden"])');
                     if (u1 || u2) return 'form_ready';
@@ -571,7 +573,7 @@ class TestService : Service(), KoinComponent {
                 """.trimIndent()
                 
                 var formReadyRetries = 0
-                while (formReadyRetries < 8) {
+                while (formReadyRetries < 20) {
                     val formState = evaluateJsSafely(wv, ensureFormJs)
                     if (formState == "form_ready") break
                     delay(1500)

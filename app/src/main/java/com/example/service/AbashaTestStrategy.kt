@@ -82,8 +82,8 @@ object AbashaTestStrategy {
 
                 // Wait for form to be ready
                 var formRetries = 0
-                val checkReadyJs = "(function() { return document.querySelector('input[name=\"username\"]') ? 'ready' : 'not_ready'; })();"
-                while (formRetries < 10) {
+                val checkReadyJs = "(function() { return (document.readyState === 'complete' && document.querySelector('input[name=\"username\"]')) ? 'ready' : 'not_ready'; })();"
+                while (formRetries < 20) {
                     val readyState = evaluateJsSafely(checkReadyJs)
                     if (readyState == "ready") break
                     delay(1000)
@@ -95,18 +95,25 @@ object AbashaTestStrategy {
                 val injectionJs = """
                 (function() {
                     try {
+                        function triggerEvents(el) {
+                            if(!el) return;
+                            try {
+                                var ev1 = document.createEvent('Event'); ev1.initEvent('input', true, true); el.dispatchEvent(ev1);
+                                var ev2 = document.createEvent('Event'); ev2.initEvent('change', true, true); el.dispatchEvent(ev2);
+                            } catch(e) {}
+                        }
+                        
                         var cardValue = '$safeCard';
                         var u = document.querySelector('input[name="username"]');
                         if (u) {
                             u.value = cardValue;
-                            u.dispatchEvent(new Event('input', { bubbles: true }));
-                            u.dispatchEvent(new Event('change', { bubbles: true }));
+                            triggerEvents(u);
                         }
                         
                         var p = document.querySelector('input[name="password"]');
                         if (p) { 
                             p.value = ''; 
-                            p.dispatchEvent(new Event('input', { bubbles: true }));
+                            triggerEvents(p);
                         }
                         
                         // Try doLogin() if exists
