@@ -17,11 +17,13 @@ object BelloTestStrategy {
         webView: WebView?,
         evaluateJsSafely: suspend (String) -> String,
         pauseCondition: suspend () -> Unit,
-        isPreloaded: Boolean = false
+        isPreloaded: Boolean = false,
+        isBlockedBySuccess: () -> Boolean = { false }
     ): Boolean {
         return withContext(Dispatchers.Main) {
             try {
                 pauseCondition()
+                if (isBlockedBySuccess()) return@withContext false
 
                 val url = "${router.protocol}://${router.ip}${router.loginPath}"
 
@@ -50,6 +52,8 @@ object BelloTestStrategy {
                     Timber.d("[Bello] Using preloaded page")
                 }
 
+                if (isBlockedBySuccess()) return@withContext false
+
                 // PRE-FLIGHT CHECK
                 val preFlightJs = """
                 (function() {
@@ -63,6 +67,7 @@ object BelloTestStrategy {
                 
                 val preFlightResult = evaluateJsSafely(preFlightJs)
                 if (preFlightResult == "logged_in") {
+                    if (isBlockedBySuccess()) return@withContext false
                     Timber.d("[Bello] Pre-flight showed ALREADY LOGGED IN. Forcing logout...")
                     val forceLogoutJs = """
                     (function() {
@@ -74,6 +79,7 @@ object BelloTestStrategy {
                     evaluateJsSafely(forceLogoutJs)
                     
                     delay(3000) 
+                    if (isBlockedBySuccess()) return@withContext false
                     val loginUrl = "${router.protocol}://${router.ip}${router.loginPath}"
                     webView?.loadUrl(loginUrl)
                     delay(2500)
@@ -83,12 +89,14 @@ object BelloTestStrategy {
                 var formRetries = 0
                 val checkReadyJs = "(function() { return (document.readyState === 'complete' && (document.querySelector('input[name=\"username\"]') || document.querySelector('#uname'))) ? 'ready' : 'not_ready'; })();"
                 while (formRetries < 20) {
+                    if (isBlockedBySuccess()) return@withContext false
                     val readyState = evaluateJsSafely(checkReadyJs)
                     if (readyState == "ready") break
                     delay(1000)
                     formRetries++
                 }
                 
+                if (isBlockedBySuccess()) return@withContext false
                 val safeCard = JSONObject.quote(card).removeSurrounding("\"").replace("'", "\\'")
                 
                 val injectionJs = """
@@ -142,11 +150,13 @@ object BelloTestStrategy {
                 })();
                 """.trimIndent()
 
+                if (isBlockedBySuccess()) return@withContext false
                 val injectResult = evaluateJsSafely(injectionJs)
                 Timber.d("[Bello] Injection result: $injectResult")
 
                 delay(3000)
 
+                if (isBlockedBySuccess()) return@withContext false
                 val checkJs = """
                 (function() {
                     var html = document.documentElement.innerHTML;
@@ -163,6 +173,7 @@ object BelloTestStrategy {
 
                 var resultStr = evaluateJsSafely(checkJs)
                 if (resultStr == "unknown") {
+                    if (isBlockedBySuccess()) return@withContext false
                     delay(2500)
                     resultStr = evaluateJsSafely(checkJs)
                 }
@@ -170,6 +181,7 @@ object BelloTestStrategy {
                 Timber.d("[Bello] Check result: $resultStr")
 
                 if (resultStr == "success") {
+                    if (isBlockedBySuccess()) return@withContext false
                     val logoutJs = """
                     (function() {
                         if (typeof openLogout === 'function') { openLogout(); return 'logout_called'; }

@@ -17,11 +17,13 @@ object MotasemTestStrategy {
         webView: WebView?,
         evaluateJsSafely: suspend (String) -> String,
         pauseCondition: suspend () -> Unit,
-        isPreloaded: Boolean = false
+        isPreloaded: Boolean = false,
+        isBlockedBySuccess: () -> Boolean = { false }
     ): Boolean {
         return withContext(Dispatchers.Main) {
             try {
                 pauseCondition()
+                if (isBlockedBySuccess()) return@withContext false
 
                 val url = "${router.protocol}://${router.ip}${router.loginPath}"
 
@@ -56,6 +58,8 @@ object MotasemTestStrategy {
                     Timber.d("[Motasem] Using preloaded page, skipping loadUrl")
                 }
 
+                if (isBlockedBySuccess()) return@withContext false
+
                 // --- PRE-FLIGHT CHECK ---
                 // If the user's phone was ALREADY logged into the router from outside the app,
                 // the router will redirect the login URL to the status/logout page automatically!
@@ -74,6 +78,7 @@ object MotasemTestStrategy {
                 
                 val preFlightResult = evaluateJsSafely(preFlightJs)
                 if (preFlightResult == "logged_in") {
+                    if (isBlockedBySuccess()) return@withContext false
                     Timber.d("[Motasem] Pre-flight showed ALREADY LOGGED IN. Forcing logout...")
                     val forceLogoutJs = """
                     (function() {
@@ -85,6 +90,7 @@ object MotasemTestStrategy {
                     evaluateJsSafely(forceLogoutJs)
                     
                     delay(3000) // Wait for logout redirect
+                    if (isBlockedBySuccess()) return@withContext false
                     // Optional: hit the login URL again just to be sure we are back
                     webView?.loadUrl(url)
                     delay(2500)
@@ -94,12 +100,14 @@ object MotasemTestStrategy {
                 var formRetries = 0
                 val checkReadyJs = "(function() { return (document.readyState === 'complete' && (document.querySelector('input[name=\"username\"]') || document.querySelector('#username') || (document.login && document.login.username))) ? 'ready' : 'not_ready'; })();"
                 while (formRetries < 20) {
+                    if (isBlockedBySuccess()) return@withContext false
                     val readyState = evaluateJsSafely(checkReadyJs)
                     if (readyState == "ready") break
                     delay(1000)
                     formRetries++
                 }
                 
+                if (isBlockedBySuccess()) return@withContext false
                 // Inject specific Motasem script snippet from his old project
                 val safeCard = JSONObject.quote(card).removeSurrounding("\"").replace("'", "\\'")
                 
@@ -172,11 +180,14 @@ object MotasemTestStrategy {
                 })();
                 """.trimIndent()
 
+                if (isBlockedBySuccess()) return@withContext false
                 val injectResult = evaluateJsSafely(injectionJs)
                 Timber.d("[Motasem] Injection result: $injectResult")
 
                 // Wait firmly for 3.5 seconds to let the router respond and redirect
                 delay(3500)
+
+                if (isBlockedBySuccess()) return@withContext false
 
                 // Motasem specific check logic using old app pattern
                 val safeSuccess = JSONObject.quote(router.successIndicator).removeSurrounding("\"").replace("'", "\\'")
@@ -205,6 +216,7 @@ object MotasemTestStrategy {
 
                 var resultStr = evaluateJsSafely(checkJs)
                 if (resultStr == "unknown") {
+                    if (isBlockedBySuccess()) return@withContext false
                     delay(2500)
                     resultStr = evaluateJsSafely(checkJs)
                 }
@@ -212,6 +224,7 @@ object MotasemTestStrategy {
                 Timber.d("[Motasem] Check result: $resultStr")
 
                 if (resultStr == "success") {
+                    if (isBlockedBySuccess()) return@withContext false
                     val logoutJs = """
                     (function() {
                         if (typeof openLogout === 'function') { openLogout(); return 'logout_called'; }

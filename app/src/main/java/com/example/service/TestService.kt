@@ -414,7 +414,7 @@ class TestService : Service(), KoinComponent {
                                     delay(1000)
                                 }
                                 
-                                testCard(card, router, true, webView)
+                                testCard(card, router, true, webView) { isBlockedBySuccess.get() }
                             } catch (e: kotlinx.coroutines.CancellationException) {
                                 throw e
                             } catch (e: Exception) {
@@ -423,6 +423,14 @@ class TestService : Service(), KoinComponent {
                             }
                             val duration = SystemClock.elapsedRealtime() - startTime
 
+                            var isTrueSuccess = false
+                            if (result) {
+                                isTrueSuccess = isBlockedBySuccess.compareAndSet(false, true)
+                                if (!isTrueSuccess) {
+                                    Timber.w("Card $card reported success, but discarded as false positive (another worker claimed success first)")
+                                }
+                            }
+
                             withContext(Dispatchers.IO) {
                                 testResultRepository.insertResult(
                                     TestResultEntity(
@@ -430,16 +438,15 @@ class TestService : Service(), KoinComponent {
                                         cardCode = card,
                                         routerId = routerId,
                                         routerName = router.name,
-                                        state = if (result) "Success" else "Failure",
-                                        message = if (result) "تم اختبار البطاقة بنجاح" else "فشلت عملية الاختبار",
+                                        state = if (isTrueSuccess) "Success" else "Failure",
+                                        message = if (isTrueSuccess) "تم اختبار البطاقة بنجاح" else if (result) "تم إلغاء النتيجة لاكتشاف نجاح بطاقة أخرى أولاً" else "فشلت عملية الاختبار",
                                         durationMs = duration,
                                         testedAt = System.currentTimeMillis()
                                     )
                                 )
                             }
 
-                            if (result) {
-                                isBlockedBySuccess.set(true)
+                            if (isTrueSuccess) {
                                 stateMutex.withLock {
                                     _serviceState.update { it.copy(successCount = it.successCount + 1) }
                                 }
@@ -460,6 +467,7 @@ class TestService : Service(), KoinComponent {
 
                             // Reload WebView for next card
                             withContext(Dispatchers.Main) {
+                                webView.evaluateJavascript("document.body.innerHTML = '';", null)
                                 webView.clearHistory()
                                 webView.clearFormData()
                                 val reloadDef = CompletableDeferred<Unit>()
@@ -494,16 +502,16 @@ class TestService : Service(), KoinComponent {
         }
     }
 
-    private suspend fun testCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView? = activeWebView): Boolean {
+    private suspend fun testCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView? = activeWebView, isBlockedBySuccess: () -> Boolean = { false }): Boolean {
         val wv = webViewToUse ?: activeWebView
         if (router.name.contains("معتصم", ignoreCase = true) || router.name.contains("motasem", ignoreCase = true)) {
-            return testMotasemCard(card, router, isPreloaded, wv)
+            return testMotasemCard(card, router, isPreloaded, wv, isBlockedBySuccess)
         }
         if (router.name.contains("بيلو", ignoreCase = true) || router.name.contains("bello", ignoreCase = true)) {
-            return testBelloCard(card, router, isPreloaded, wv)
+            return testBelloCard(card, router, isPreloaded, wv, isBlockedBySuccess)
         }
         if (router.name.contains("اباشا", ignoreCase = true) || router.name.contains("abasha", ignoreCase = true) || router.name.contains("الباشا", ignoreCase = true)) {
-            return testAbashaCard(card, router, isPreloaded, wv)
+            return testAbashaCard(card, router, isPreloaded, wv, isBlockedBySuccess)
         }
         
         return withContext(Dispatchers.Main) {
@@ -512,6 +520,8 @@ class TestService : Service(), KoinComponent {
                 val url = "${router.protocol}://${router.ip}${router.loginPath}"
                 Timber.d("Testing URL: $url preloaded: $isPreloaded")
                 
+                if (isBlockedBySuccess()) return@withContext false
+
                 if (!isPreloaded) {
                     if (wv == null) return@withContext false
                     try {
@@ -542,6 +552,8 @@ class TestService : Service(), KoinComponent {
                     }
                     delay(1000)
                 }
+
+                if (isBlockedBySuccess()) return@withContext false
 
                 val ensureFormJs = """
                 (function() {
@@ -574,11 +586,14 @@ class TestService : Service(), KoinComponent {
                 
                 var formReadyRetries = 0
                 while (formReadyRetries < 20) {
+                    if (isBlockedBySuccess()) return@withContext false
                     val formState = evaluateJsSafely(wv, ensureFormJs)
                     if (formState == "form_ready") break
                     delay(1500)
                     formReadyRetries++
                 }
+
+                if (isBlockedBySuccess()) return@withContext false
 
                 val js = InjectionManager.buildInjectionJs(
                     card = card,
@@ -594,6 +609,7 @@ class TestService : Service(), KoinComponent {
                 val maxRetries = 15
                 
                 while (retries < maxRetries) {
+                    if (isBlockedBySuccess()) return@withContext false
                     delay(1000)
                     val currentState = evaluateJsSafely(wv, checkJs)
                     
@@ -659,36 +675,39 @@ class TestService : Service(), KoinComponent {
         }
     }
 
-    private suspend fun testMotasemCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?): Boolean {
+    private suspend fun testMotasemCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?, isBlockedBySuccess: () -> Boolean): Boolean {
         return MotasemTestStrategy.testMotasemCard(
             card = card,
             router = router,
             webView = webViewToUse,
             evaluateJsSafely = { js -> evaluateJsSafely(webViewToUse, js) },
             pauseCondition = { while (_serviceState.value.isPaused) { kotlinx.coroutines.delay(500) } },
-            isPreloaded = isPreloaded
+            isPreloaded = isPreloaded,
+            isBlockedBySuccess = isBlockedBySuccess
         )
     }
 
-    private suspend fun testBelloCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?): Boolean {
+    private suspend fun testBelloCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?, isBlockedBySuccess: () -> Boolean): Boolean {
         return BelloTestStrategy.testBelloCard(
             card = card,
             router = router,
             webView = webViewToUse,
             evaluateJsSafely = { js -> evaluateJsSafely(webViewToUse, js) },
             pauseCondition = { while (_serviceState.value.isPaused) { kotlinx.coroutines.delay(500) } },
-            isPreloaded = isPreloaded
+            isPreloaded = isPreloaded,
+            isBlockedBySuccess = isBlockedBySuccess
         )
     }
 
-    private suspend fun testAbashaCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?): Boolean {
+    private suspend fun testAbashaCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?, isBlockedBySuccess: () -> Boolean): Boolean {
         return AbashaTestStrategy.testAbashaCard(
             card = card,
             router = router,
             webView = webViewToUse,
             evaluateJsSafely = { js -> evaluateJsSafely(webViewToUse, js) },
             pauseCondition = { while (_serviceState.value.isPaused) { kotlinx.coroutines.delay(500) } },
-            isPreloaded = isPreloaded
+            isPreloaded = isPreloaded,
+            isBlockedBySuccess = isBlockedBySuccess
         )
     }
 
