@@ -353,6 +353,7 @@ class TestService : Service(), KoinComponent {
                 val progressCounter = AtomicInteger(0)
                 val isBlockedBySuccess = AtomicBoolean(false)
                 val stateMutex = Mutex()
+                val injectionMutex = Mutex()
 
                 val workers = webViewPool.mapIndexed { wvIndex, webView ->
                     launch {
@@ -414,7 +415,9 @@ class TestService : Service(), KoinComponent {
                                     delay(1000)
                                 }
                                 
-                                testCard(card, router, true, webView) { isBlockedBySuccess.get() }
+                                injectionMutex.withLock {
+                                    testCard(card, router, true, webView) { isBlockedBySuccess.get() }
+                                }
                             } catch (e: kotlinx.coroutines.CancellationException) {
                                 throw e
                             } catch (e: Exception) {

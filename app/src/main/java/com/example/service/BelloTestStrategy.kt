@@ -97,6 +97,8 @@ object BelloTestStrategy {
                 }
                 
                 if (isBlockedBySuccess()) return@withContext false
+                delay(2000) // Ensure fully loaded
+                
                 val safeCard = JSONObject.quote(card).removeSurrounding("\"").replace("'", "\\'")
                 
                 val injectionJs = """
@@ -111,41 +113,36 @@ object BelloTestStrategy {
                         }
                         
                         var cardValue = '$safeCard';
-                        var u = document.querySelector('input[name="username"], #uname, #username');
+                        var u = document.querySelector('form[name="login"] input[name="username"]') || document.querySelector('#uname') || document.querySelector('#username') || document.querySelector('input[name="username"]:not([type="hidden"])');
                         if (u) {
                             u.value = cardValue;
                             triggerEvents(u);
                         }
                         
-                        var p = document.querySelector('input[name="password"]');
+                        var p = document.querySelector('form[name="login"] input[name="password"]') || document.querySelector('#password') || document.querySelector('input[name="password"]:not([type="hidden"])');
                         if (p) { 
                             p.value = ''; 
                             triggerEvents(p);
                         }
                         
-                        // Try doLogin() if exists
                         if (typeof doLogin === 'function') {
                             try { 
                                 doLogin(); 
                                 return 'injected_dologin'; 
-                            } catch (err) {
-                                console.error('doLogin failed', err);
-                            }
+                            } catch (err) {}
                         }
                         
-                        var submitBtn = document.querySelector('button[type="submit"], input[type="submit"], .submit button, .btn-main');
+                        var submitBtn = document.querySelector('form[name="login"] button[type="submit"], form[name="login"] input[type="submit"], .submit button, .btn-main');
                         if (submitBtn) {
                             submitBtn.click();
-                            return 'injected_click_processed';
+                            return 'injected_click';
                         }
                         
-                        var forms = document.getElementsByTagName('form');
-                        if (forms.length > 0) {
-                            forms[0].submit();
-                            return 'injected_form0_fallback';
+                        var form = document.querySelector('form[name="login"]') || (document.forms.length > 1 ? document.forms[1] : document.forms[0]);
+                        if (form) {
+                            form.submit();
                         }
-                        
-                        return 'injected_no_submit_found';
+                        return 'injected_form_fallback';
                     } catch(e) { return 'error: ' + e.message; }
                 })();
                 """.trimIndent()

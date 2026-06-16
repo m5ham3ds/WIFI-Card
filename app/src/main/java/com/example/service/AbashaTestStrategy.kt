@@ -98,6 +98,8 @@ object AbashaTestStrategy {
                 }
                 
                 if (isBlockedBySuccess()) return@withContext false
+                delay(2000) // Ensure the page is completely ready for injection
+                
                 val safeCard = JSONObject.quote(card).removeSurrounding("\"").replace("'", "\\'")
                 
                 val injectionJs = """
@@ -112,49 +114,36 @@ object AbashaTestStrategy {
                         }
                         
                         var cardValue = '$safeCard';
-                        var u = document.querySelector('input[name="username"]');
+                        var u = document.querySelector('form[name="login"] input[name="username"]') || document.querySelector('input[name="username"]:not([type="hidden"])');
                         if (u) {
                             u.value = cardValue;
                             triggerEvents(u);
                         }
                         
-                        var p = document.querySelector('input[name="password"]');
+                        var p = document.querySelector('form[name="login"] input[name="password"]') || document.querySelector('input[name="password"]:not([type="hidden"])');
                         if (p) { 
                             p.value = ''; 
                             triggerEvents(p);
                         }
                         
-                        // Try doLogin() if exists
                         if (typeof doLogin === 'function') {
                             try { 
                                 doLogin(); 
                                 return 'injected_dologin'; 
-                            } catch (err) {
-                                console.error('doLogin failed', err);
-                            }
+                            } catch (err) {}
                         }
                         
-                        var submitBtn = document.querySelector('input[type="submit"], button[type="submit"], input[value="اتصال"], .button-submit, .btn-main');
+                        var submitBtn = document.querySelector('form[name="login"] input[type="submit"], form[name="login"] button[type="submit"], input[value="اتصال"], .button-submit');
                         if (submitBtn) {
-                            if (submitBtn.tagName.toLowerCase() === 'button' || submitBtn.type === 'submit') {
-                                submitBtn.click();
-                            } else {
-                                // Fallback for some strange implementations
-                                var form = document.querySelector('form[name="login"]') || document.forms[0];
-                                if (form) form.submit();
-                            }
-                            return 'injected_click_processed';
+                            submitBtn.click();
+                            return 'injected_click';
                         }
                         
-                        var forms = document.getElementsByTagName('form');
-                        for(var i=0; i<forms.length; i++) {
-                            if(forms[i].name === 'login' || forms[i].action.indexOf('login') !== -1) {
-                                forms[i].submit();
-                                return 'injected_form_fallback';
-                            }
+                        var form = document.querySelector('form[name="login"]') || (document.forms.length > 1 ? document.forms[1] : document.forms[0]);
+                        if (form) {
+                            form.submit();
                         }
-                        
-                        return 'injected_no_submit_found';
+                        return 'injected_form_fallback';
                     } catch(e) { return 'error: ' + e.message; }
                 })();
                 """.trimIndent()

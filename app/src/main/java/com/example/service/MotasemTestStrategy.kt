@@ -108,6 +108,8 @@ object MotasemTestStrategy {
                 }
                 
                 if (isBlockedBySuccess()) return@withContext false
+                delay(2000) // Extra wait for full load before injection
+                
                 // Inject specific Motasem script snippet from his old project
                 val safeCard = JSONObject.quote(card).removeSurrounding("\"").replace("'", "\\'")
                 
@@ -128,7 +130,7 @@ object MotasemTestStrategy {
                         if (document.login && document.login.username) {
                             document.login.username.value = cardValue;
                         } else {
-                            var u = document.querySelector('input[name="username"], #username');
+                            var u = document.querySelector('form[name="login"] input[name="username"]') || document.querySelector('#username') || document.querySelector('input[name="username"]:not([type="hidden"])');
                             if (u) {
                                 u.value = cardValue;
                                 triggerEvents(u);
@@ -139,7 +141,7 @@ object MotasemTestStrategy {
                             document.login.password.value = '';
                         }
                         
-                        var pass = document.querySelector('input[name="password"]');
+                        var pass = document.querySelector('form[name="login"] input[name="password"]') || document.querySelector('input[name="password"]:not([type="hidden"])');
                         if (pass) {
                             pass.value = '';
                             triggerEvents(pass);
