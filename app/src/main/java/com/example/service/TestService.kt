@@ -242,35 +242,49 @@ class TestService : Service(), KoinComponent {
         withContext(Dispatchers.Main) {
             try {
                 val url = "${router.protocol}://${router.ip}${router.loginPath}"
-                
-                val wv = webViewPool.firstOrNull() ?: return@withContext
-                pageLoadedDeferredMap[wv] = null
-                wv.stopLoading()
-                delay(500)
-                
-                val def = CompletableDeferred<Unit>()
-                pageLoadedDeferredMap[wv] = def
-                wv.loadUrl(url)
-                try {
-                    kotlinx.coroutines.withTimeout(15000) {
-                        def.await()
-                    }
-                } catch (e: Exception) {
-                    Timber.e(e, "Error loading page to check logout state.")
-                    return@withContext
-                }
 
-                // Wait for page scripts
-                delay(1500)
-                
-                val checkJs = InjectionManager.buildCheckResultJs(router.successIndicator, router.failureIndicator, router.submitSelector, router.logoutSelector)
-                val state = evaluateJsSafely(wv, checkJs)
-                
-                if (state == "success") {
-                    Timber.d("User is already logged in prior to test! Logging out...")
-                    val lJs = InjectionManager.buildLogoutJs(router.logoutSelector)
-                    evaluateJsSafely(wv, lJs)
-                    delay(3500) // wait for logout to process
+                // Check and logout for each webview in the pool
+                webViewPool.forEach { wv ->
+                    // Stop any ongoing load and reset deferred
+                    pageLoadedDeferredMap[wv] = null
+                    wv.stopLoading()
+                    delay(200)
+
+                    val def = CompletableDeferred<Unit>()
+                    pageLoadedDeferredMap[wv] = def
+                    wv.loadUrl(url)
+                    try {
+                        kotlinx.coroutines.withTimeout(15000) {
+                            def.await()
+                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error loading page to check logout state in webview.")
+                        return@forEach
+                    }
+
+                    // Wait for page scripts
+                    delay(1500)
+                    
+                    val checkJs = InjectionManager.buildCheckResultJs(router.successIndicator, router.failureIndicator, router.submitSelector, router.logoutSelector)
+                    val state = evaluateJsSafely(wv, checkJs)
+                    
+                    if (state == "success") {
+                        Timber.d("User is already logged in prior to test! Logging out...")
+                        val lJs = InjectionManager.buildLogoutJs(router.logoutSelector)
+                        evaluateJsSafely(wv, lJs)
+                        delay(2500) // wait for logout to process
+                        
+                        // Load again just to be safe it's on the login page now
+                        val relDef = CompletableDeferred<Unit>()
+                        pageLoadedDeferredMap[wv] = relDef
+                        wv.loadUrl(url)
+                        try {
+                            kotlinx.coroutines.withTimeout(15000) { relDef.await() }
+                        } catch (e: Exception) {
+                            Timber.e(e, "Error loading login page after forced logout.")
+                        }
+                        delay(1000)
+                    }
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error during ensureLoggedOut")
@@ -332,10 +346,7 @@ class TestService : Service(), KoinComponent {
                     }
                 }
 
-                // Perform initial logout check after pool is initialized
-                ensureLoggedOut(router)
-                
-                // Preload all WebViews after logout check
+                // Preload and ensure logged out for all WebViews
                 withContext(Dispatchers.Main) {
                     webViewPool.forEach { 
                         val def = CompletableDeferred<Unit>()
@@ -343,6 +354,12 @@ class TestService : Service(), KoinComponent {
                         it.loadUrl(url) 
                     }
                 }
+                
+                // Perform initial logout check after pool is initialized and let them load
+                ensureLoggedOut(router)
+                
+                // We don't need to re-preload unless ensureLoggedOut re-loaded them, 
+                // but ensureLoggedOut now operates on all web views so we are good.
                 
                 delay(2000)
 
@@ -561,25 +578,30 @@ class TestService : Service(), KoinComponent {
                 val ensureFormJs = """
                 (function() {
                     if (document.readyState !== 'complete') return 'not_ready';
+                    
+                    var html = document.documentElement.innerHTML || '';
+                    if (html.toLowerCase().indexOf('logout') !== -1 || html.indexOf('تسجيل الخروج') !== -1) {
+                         var links = document.querySelectorAll('a, button, input[type="submit"], input[type="button"]');
+                         for (var i = 0; i < links.length; i++) {
+                             var text = (links[i].textContent || '').toLowerCase();
+                             var val = (links[i].value || '').toLowerCase();
+                             if (text.indexOf('تسجيل الخروج') !== -1 || val.indexOf('تسجيل الخروج') !== -1 || text.indexOf('logout') !== -1 || val.indexOf('logout') !== -1) {
+                                 links[i].click();
+                                 return 'clicked_logout';
+                             }
+                         }
+                    }
+                    
                     var u1 = document.querySelector('input[name="username"]');
                     var u2 = document.querySelector('input[type="text"]:not([type="hidden"])');
                     if (u1 || u2) return 'form_ready';
                     
-                    var links = document.querySelectorAll('a, button, input[type="submit"]');
-                    for (var i = 0; i < links.length; i++) {
-                        var text = links[i].textContent || '';
-                        var val = links[i].value || '';
-                        if (text.indexOf('تسجيل الخروج') !== -1 || val.indexOf('تسجيل الخروج') !== -1 || text.toLowerCase().indexOf('logout') !== -1) {
-                            links[i].click();
-                            return 'clicked_logout';
-                        }
-                    }
-                    
-                    for (var i = 0; i < links.length; i++) {
-                        var text = links[i].textContent || '';
-                        var val = links[i].value || '';
-                        if (text.indexOf('تسجيل الدخول') !== -1 || val.indexOf('تسجيل الدخول') !== -1) {
-                            links[i].click();
+                    var links2 = document.querySelectorAll('a, button, input[type="submit"]');
+                    for (var i = 0; i < links2.length; i++) {
+                        var text = links2[i].textContent || '';
+                        var val = links2[i].value || '';
+                        if (text.indexOf('تسجيل الدخول') !== -1 || val.indexOf('تسجيل الدخول') !== -1 || text.toLowerCase().indexOf('login') !== -1) {
+                            links2[i].click();
                             return 'clicked_login_redirect';
                         }
                     }
@@ -592,6 +614,13 @@ class TestService : Service(), KoinComponent {
                     if (isBlockedBySuccess()) return@withContext false
                     val formState = evaluateJsSafely(wv, ensureFormJs)
                     if (formState == "form_ready") break
+                    if (formState == "clicked_logout") {
+                        Timber.d("Found logout button before injecting. Clicked it. Waiting for reload...")
+                        delay(2500)
+                    } else if (formState == "clicked_login_redirect") {
+                        Timber.d("Found login redirect. Clicked it.")
+                        delay(2000)
+                    }
                     delay(1500)
                     formReadyRetries++
                 }

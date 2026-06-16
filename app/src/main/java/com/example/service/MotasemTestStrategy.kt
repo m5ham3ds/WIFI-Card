@@ -156,15 +156,18 @@ object MotasemTestStrategy {
                         }
                         
                         // 4. Fallback 1: submit the hidden form (sendin) directly
-                        if (document.sendin) {
-                            document.sendin.username.value = cardValue;
-                            if (document.sendin.password) document.sendin.password.value = '';
-                            document.sendin.submit();
+                        var sendinForm = document.querySelector('form[name="sendin"]');
+                        if (sendinForm) {
+                            var su = sendinForm.querySelector('input[name="username"]');
+                            if (su) su.value = cardValue;
+                            var sp = sendinForm.querySelector('input[name="password"]');
+                            if (sp) sp.value = '';
+                            sendinForm.submit();
                             return 'injected_sendin_fallback';
                         }
                         
                         // 5. Fallback 2: click the submit button
-                        var submitBtn = document.querySelector('button[type=submit], input[type=submit], .submit button, .btn-main, .button-submit');
+                        var submitBtn = document.querySelector('form[name="login"] button[type=submit], form[name="login"] input[type=submit], .submit button, .btn-main, .button-submit');
                         if (submitBtn) {
                             submitBtn.click();
                             return 'injected_click_processed';
