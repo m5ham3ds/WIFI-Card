@@ -18,6 +18,7 @@ object MotasemTestStrategy {
         evaluateJsSafely: suspend (String) -> String,
         pauseCondition: suspend () -> Unit,
         isPreloaded: Boolean = false,
+        onRequiresGlobalRelogin: (suspend () -> Unit)? = null,
         isBlockedBySuccess: () -> Boolean = { false }
     ): Boolean {
         return withContext(Dispatchers.Main) {
@@ -80,20 +81,28 @@ object MotasemTestStrategy {
                 if (preFlightResult == "logged_in") {
                     if (isBlockedBySuccess()) return@withContext false
                     Timber.d("[Motasem] Pre-flight showed ALREADY LOGGED IN. Forcing logout...")
-                    val forceLogoutJs = """
-                    (function() {
-                        if (typeof openLogout === 'function') { openLogout(); return; }
-                        var logoutBtn = document.querySelector('a[href*="logout"], button[onclick*="logout"], input[value*="تسجيل الخروج"], button[value*="تسجيل الخروج"]');
-                        if (logoutBtn) { logoutBtn.click(); }
-                    })();
-                    """.trimIndent()
-                    evaluateJsSafely(forceLogoutJs)
-                    
-                    delay(3000) // Wait for logout redirect
-                    if (isBlockedBySuccess()) return@withContext false
-                    // Optional: hit the login URL again just to be sure we are back
-                    webView?.loadUrl(url)
-                    delay(2500)
+                    if (onRequiresGlobalRelogin != null) {
+                        onRequiresGlobalRelogin()
+                    } else {
+                        val forceLogoutJs = """
+                        (function() {
+                            var f = document.getElementById('mForm');
+                            if (f) { f.submit(); return 'mForm'; }
+                            var f2 = document.querySelector('form[name="logout"]');
+                            if (f2) { f2.submit(); return 'logout_form'; }
+                            var logoutBtn = document.querySelector('form[name="logout"] button') || document.querySelector('a[href*="logout"], button[onclick*="logout"], input[value*="Logout"], input[value*="تسجيل الخروج"], button[value*="تسجيل الخروج"]');
+                            if (logoutBtn) { logoutBtn.click(); return 'clicked'; }
+                            if (typeof openLogout === 'function') { openLogout(); return 'openLogout'; }
+                        })();
+                        """.trimIndent()
+                        evaluateJsSafely(forceLogoutJs)
+                        
+                        delay(3000) // Wait for logout redirect
+                        if (isBlockedBySuccess()) return@withContext false
+                        // Optional: hit the login URL again just to be sure we are back
+                        webView?.loadUrl(url)
+                        delay(2500)
+                    }
                 }
 
                 // Wait for form to be ready

@@ -98,15 +98,22 @@ object InjectionManager {
                     return 'clicked';
                 }
                 
+                var f = document.getElementById('mForm');
+                if (f) { f.submit(); return 'mForm'; }
+                var f2 = document.querySelector('form[name="logout"]');
+                if (f2) { f2.submit(); return 'logout_form'; }
+                
                 // Fallback: search for logout link if selector fails or is empty
-                var links = document.querySelectorAll('a, button');
+                var links = document.querySelectorAll('a, button, input[type="button"], input[type="submit"]');
                 for (var i = 0; i < links.length; i++) {
-                    var text = links[i].textContent.toLowerCase();
-                    if (text.indexOf('logout') !== -1 || text.indexOf('تسجيل الخروج') !== -1 || text.indexOf('خروج') !== -1) {
+                    var text = (links[i].textContent || '').toLowerCase();
+                    var value = (links[i].value || '').toLowerCase();
+                    if (text.indexOf('logout') !== -1 || text.indexOf('تسجيل الخروج') !== -1 || text.indexOf('خروج') !== -1 || value.indexOf('logout') !== -1 || value.indexOf('تسجيل الخروج') !== -1) {
                         links[i].click();
                         return 'clicked_fallback';
                     }
                 }
+                if (typeof openLogout === 'function') { openLogout(); return 'openLogout'; }
                 return 'not_found';
             } catch(e) { return 'error:' + e.message; }
         })();

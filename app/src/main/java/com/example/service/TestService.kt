@@ -370,13 +370,13 @@ class TestService : Service(), KoinComponent {
                 val progressCounter = AtomicInteger(0)
                 val isBlockedBySuccess = AtomicBoolean(false)
                 val stateMutex = Mutex()
-                val injectionMutex = Mutex()
+                val isRelogging = AtomicBoolean(false)
 
                 val workers = webViewPool.mapIndexed { wvIndex, webView ->
                     launch {
                         for (card in cardQueue) {
                             // Check pause states
-                            while (_serviceState.value.isPaused || isBlockedBySuccess.get()) {
+                            while (_serviceState.value.isPaused || isBlockedBySuccess.get() || isRelogging.get()) {
                                 delay(500)
                             }
 
@@ -432,9 +432,43 @@ class TestService : Service(), KoinComponent {
                                     delay(1000)
                                 }
                                 
-                                injectionMutex.withLock {
-                                    testCard(card, router, true, webView) { isBlockedBySuccess.get() }
+                                val onRequiresGlobalRelogin: suspend () -> Unit = {
+                                    if (isRelogging.compareAndSet(false, true)) {
+                                        Timber.d("Global relogin triggered by a webview. Pausing all others...")
+                                        // Wait a moment for others to pause
+                                        delay(1000)
+                                        // Ensure logged out on this webview
+                                        val lJs = InjectionManager.buildLogoutJs(router.logoutSelector)
+                                        evaluateJsSafely(webView, lJs)
+                                        delay(3000)
+                                        
+                                        // Reload ALL webviews
+                                        withContext(Dispatchers.Main) {
+                                            webViewPool.forEach { wv ->
+                                                val relDef = CompletableDeferred<Unit>()
+                                                pageLoadedDeferredMap[wv] = relDef
+                                                wv.loadUrl("${router.protocol}://${router.ip}${router.loginPath}")
+                                            }
+                                        }
+                                        // Wait for all to load
+                                        webViewPool.forEach { wv ->
+                                            try {
+                                                val rD = pageLoadedDeferredMap[wv]
+                                                if (rD != null) {
+                                                    kotlinx.coroutines.withTimeout(15000) { rD.await() }
+                                                }
+                                            } catch (e: Exception) {}
+                                        }
+                                        delay(2000)
+                                        isRelogging.set(false)
+                                        Timber.d("Global relogin complete. Resuming all...")
+                                    } else {
+                                        // Already relogging, just wait for it to finish
+                                        while (isRelogging.get()) { delay(500) }
+                                    }
                                 }
+                                
+                                testCard(card, router, true, webView, onRequiresGlobalRelogin) { isBlockedBySuccess.get() }
                             } catch (e: kotlinx.coroutines.CancellationException) {
                                 throw e
                             } catch (e: Exception) {
@@ -522,16 +556,16 @@ class TestService : Service(), KoinComponent {
         }
     }
 
-    private suspend fun testCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView? = activeWebView, isBlockedBySuccess: () -> Boolean = { false }): Boolean {
+    private suspend fun testCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView? = activeWebView, onRequiresGlobalRelogin: (suspend () -> Unit)? = null, isBlockedBySuccess: () -> Boolean = { false }): Boolean {
         val wv = webViewToUse ?: activeWebView
         if (router.name.contains("معتصم", ignoreCase = true) || router.name.contains("motasem", ignoreCase = true)) {
-            return testMotasemCard(card, router, isPreloaded, wv, isBlockedBySuccess)
+            return testMotasemCard(card, router, isPreloaded, wv, onRequiresGlobalRelogin, isBlockedBySuccess)
         }
         if (router.name.contains("بيلو", ignoreCase = true) || router.name.contains("bello", ignoreCase = true)) {
-            return testBelloCard(card, router, isPreloaded, wv, isBlockedBySuccess)
+            return testBelloCard(card, router, isPreloaded, wv, onRequiresGlobalRelogin, isBlockedBySuccess)
         }
         if (router.name.contains("اباشا", ignoreCase = true) || router.name.contains("abasha", ignoreCase = true) || router.name.contains("الباشا", ignoreCase = true)) {
-            return testAbashaCard(card, router, isPreloaded, wv, isBlockedBySuccess)
+            return testAbashaCard(card, router, isPreloaded, wv, onRequiresGlobalRelogin, isBlockedBySuccess)
         }
         
         return withContext(Dispatchers.Main) {
@@ -581,6 +615,10 @@ class TestService : Service(), KoinComponent {
                     
                     var html = document.documentElement.innerHTML || '';
                     if (html.toLowerCase().indexOf('logout') !== -1 || html.indexOf('تسجيل الخروج') !== -1) {
+                         var f = document.getElementById('mForm');
+                         if (f) { f.submit(); return 'mForm'; }
+                         var f2 = document.querySelector('form[name="logout"]');
+                         if (f2) { f2.submit(); return 'logout_form'; }
                          var links = document.querySelectorAll('a, button, input[type="submit"], input[type="button"]');
                          for (var i = 0; i < links.length; i++) {
                              var text = (links[i].textContent || '').toLowerCase();
@@ -590,6 +628,7 @@ class TestService : Service(), KoinComponent {
                                  return 'clicked_logout';
                              }
                          }
+                         if (typeof openLogout === 'function') { openLogout(); return 'openLogout'; }
                     }
                     
                     var u1 = document.querySelector('input[name="username"]');
@@ -614,8 +653,8 @@ class TestService : Service(), KoinComponent {
                     if (isBlockedBySuccess()) return@withContext false
                     val formState = evaluateJsSafely(wv, ensureFormJs)
                     if (formState == "form_ready") break
-                    if (formState == "clicked_logout") {
-                        Timber.d("Found logout button before injecting. Clicked it. Waiting for reload...")
+                    if (formState == "clicked_logout" || formState == "mForm" || formState == "logout_form" || formState == "openLogout") {
+                        Timber.d("Found logout before injecting. Triggered logout. Waiting for reload...")
                         delay(2500)
                     } else if (formState == "clicked_login_redirect") {
                         Timber.d("Found login redirect. Clicked it.")
@@ -707,7 +746,7 @@ class TestService : Service(), KoinComponent {
         }
     }
 
-    private suspend fun testMotasemCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?, isBlockedBySuccess: () -> Boolean): Boolean {
+    private suspend fun testMotasemCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?, onRequiresGlobalRelogin: (suspend () -> Unit)?, isBlockedBySuccess: () -> Boolean): Boolean {
         return MotasemTestStrategy.testMotasemCard(
             card = card,
             router = router,
@@ -715,11 +754,12 @@ class TestService : Service(), KoinComponent {
             evaluateJsSafely = { js -> evaluateJsSafely(webViewToUse, js) },
             pauseCondition = { while (_serviceState.value.isPaused) { kotlinx.coroutines.delay(500) } },
             isPreloaded = isPreloaded,
+            onRequiresGlobalRelogin = onRequiresGlobalRelogin,
             isBlockedBySuccess = isBlockedBySuccess
         )
     }
 
-    private suspend fun testBelloCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?, isBlockedBySuccess: () -> Boolean): Boolean {
+    private suspend fun testBelloCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?, onRequiresGlobalRelogin: (suspend () -> Unit)?, isBlockedBySuccess: () -> Boolean): Boolean {
         return BelloTestStrategy.testBelloCard(
             card = card,
             router = router,
@@ -727,11 +767,12 @@ class TestService : Service(), KoinComponent {
             evaluateJsSafely = { js -> evaluateJsSafely(webViewToUse, js) },
             pauseCondition = { while (_serviceState.value.isPaused) { kotlinx.coroutines.delay(500) } },
             isPreloaded = isPreloaded,
+            onRequiresGlobalRelogin = onRequiresGlobalRelogin,
             isBlockedBySuccess = isBlockedBySuccess
         )
     }
 
-    private suspend fun testAbashaCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?, isBlockedBySuccess: () -> Boolean): Boolean {
+    private suspend fun testAbashaCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView?, onRequiresGlobalRelogin: (suspend () -> Unit)?, isBlockedBySuccess: () -> Boolean): Boolean {
         return AbashaTestStrategy.testAbashaCard(
             card = card,
             router = router,
@@ -739,6 +780,7 @@ class TestService : Service(), KoinComponent {
             evaluateJsSafely = { js -> evaluateJsSafely(webViewToUse, js) },
             pauseCondition = { while (_serviceState.value.isPaused) { kotlinx.coroutines.delay(500) } },
             isPreloaded = isPreloaded,
+            onRequiresGlobalRelogin = onRequiresGlobalRelogin,
             isBlockedBySuccess = isBlockedBySuccess
         )
     }
