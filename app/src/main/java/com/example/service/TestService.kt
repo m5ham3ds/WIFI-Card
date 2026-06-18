@@ -690,6 +690,13 @@ class TestService : Service(), KoinComponent {
                     } else if (currentState == "failure") {
                         resolvedState = "failure"
                         break
+                    } else if (currentState == "authorizing") {
+                        Timber.d("Router reports already authorizing. Triggering fix...")
+                        delay(2000)
+                        onRequiresGlobalRelogin?.invoke()
+                        // Ensure we fail this card so it doesn't spin forever, and the relogin will take care of the next card
+                        resolvedState = "failure" 
+                        break
                     }
                     retries++
                 }

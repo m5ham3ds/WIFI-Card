@@ -165,19 +165,42 @@ object BelloTestStrategy {
                 if (isBlockedBySuccess()) return@withContext false
                 val checkJs = """
                 (function() {
-                    var html = document.documentElement.innerHTML;
-                    var bodyText = document.body.innerText || '';
+                    var html = document.documentElement.innerHTML.toLowerCase();
+                    var bodyText = (document.body.innerText || '').toLowerCase();
                     if (bodyText.indexOf('تفاصيل الأستخدام') !== -1 || bodyText.indexOf('الوقت المتبقي') !== -1 || bodyText.indexOf('الرصيد المتبقي') !== -1) return 'success';
                     if (html.indexOf('تسجيل الخروج') !== -1 || bodyText.indexOf('تسجيل الخروج') !== -1 || bodyText.indexOf('logout') !== -1) return 'success';
                     if (document.querySelector('form[action*="logout"]') || document.querySelector('a[href*="logout"]') || document.querySelector('.info.blue')) return 'success';
                     
-                    if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('Incomplete') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';
+                    if (bodyText.indexOf('already authorizing') !== -1 || html.indexOf('already authorizing') !== -1) return 'authorizing';
+                    if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('incomplete') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';
                     
                     return 'unknown';
                 })();
                 """.trimIndent()
 
                 var resultStr = evaluateJsSafely(checkJs)
+                
+                if (resultStr == "authorizing") {
+                    Timber.d("[Bello] Router reports already authorizing. Waiting longer and retrying...")
+                    delay(4000)
+                    resultStr = evaluateJsSafely(checkJs)
+                    if (resultStr == "authorizing") {
+                        if (onRequiresGlobalRelogin != null) {
+                            onRequiresGlobalRelogin()
+                        } else {
+                            val fixAuthJs = """
+                            (function() {
+                                var logoutBtn = document.querySelector('form[name="logout"] button') || document.querySelector('a[href*="logout"]');
+                                if (logoutBtn) logoutBtn.click();
+                            })();
+                            """.trimIndent()
+                            evaluateJsSafely(fixAuthJs)
+                            delay(2000)
+                        }
+                        resultStr = evaluateJsSafely(checkJs)
+                    }
+                }
+                
                 if (resultStr == "unknown") {
                     if (isBlockedBySuccess()) return@withContext false
                     delay(2500)

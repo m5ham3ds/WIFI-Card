@@ -132,6 +132,9 @@ object InjectionManager {
                 
                 // 1. Explicit Failure Indicators
                 if ('$safeFailure' !== '' && html.indexOf('$safeFailure') !== -1) return 'failure';
+                if (bodyText.indexOf('already authorizing') !== -1 || html.indexOf('already authorizing') !== -1) {
+                    return 'authorizing';
+                }
                 if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('لا يمكن') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('incorrect') !== -1) {
                     // Make sure it's not a generic word in the page footer, but a common Mikrotik error is enough.
                     return 'failure';

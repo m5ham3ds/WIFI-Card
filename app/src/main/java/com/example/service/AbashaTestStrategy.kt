@@ -166,12 +166,13 @@ object AbashaTestStrategy {
                 if (isBlockedBySuccess()) return@withContext false
                 val checkJs = """
                 (function() {
-                    var html = document.documentElement.innerHTML;
-                    var bodyText = document.body.innerText || '';
-                    if (html.indexOf('MikroTicket Status') !== -1) return 'success';
-                    if (bodyText.indexOf('عنوان IP') !== -1 || bodyText.indexOf('تنزيل') !== -1 || bodyText.indexOf('رفع') !== -1 || bodyText.indexOf('وقت الاتصال') !== -1) return 'success';
+                    var html = document.documentElement.innerHTML.toLowerCase();
+                    var bodyText = (document.body.innerText || '').toLowerCase();
+                    if (html.indexOf('mikroticket status') !== -1) return 'success';
+                    if (bodyText.indexOf('عنوان ip') !== -1 || bodyText.indexOf('تنزيل') !== -1 || bodyText.indexOf('رفع') !== -1 || bodyText.indexOf('وقت الاتصال') !== -1) return 'success';
                     if (document.querySelector('form[id="mForm"]') || document.querySelector('form[action*="logout"]')) return 'success';
                     
+                    if (bodyText.indexOf('already authorizing') !== -1 || html.indexOf('already authorizing') !== -1) return 'authorizing';
                     if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';
                     
                     return 'unknown';
@@ -179,6 +180,30 @@ object AbashaTestStrategy {
                 """.trimIndent()
 
                 var resultStr = evaluateJsSafely(checkJs)
+                
+                if (resultStr == "authorizing") {
+                    Timber.d("[Abasha] Router reports already authorizing. Waiting longer and retrying...")
+                    delay(4000)
+                    resultStr = evaluateJsSafely(checkJs)
+                    if (resultStr == "authorizing") {
+                        // Still authorizing, trigger global relogin if available
+                        if (onRequiresGlobalRelogin != null) {
+                            onRequiresGlobalRelogin()
+                        } else {
+                            val fixAuthJs = """
+                            (function() {
+                                var logoutBtn = document.querySelector('form[name="logout"] button') || document.querySelector('a[href*="logout"]');
+                                if (logoutBtn) logoutBtn.click();
+                            })();
+                            """.trimIndent()
+                            evaluateJsSafely(fixAuthJs)
+                            delay(2000)
+                        }
+                        // Give it one last check
+                        resultStr = evaluateJsSafely(checkJs)
+                    }
+                }
+                
                 if (resultStr == "unknown") {
                     if (isBlockedBySuccess()) return@withContext false
                     delay(2500)

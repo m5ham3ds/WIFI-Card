@@ -209,26 +209,50 @@ object MotasemTestStrategy {
                 
                 val checkJs = """
                 (function() {
-                    var html = document.documentElement.innerHTML;
-                    if ('$safeSuccess' !== '' && '$safeSuccess' !== 'null' && html.indexOf('$safeSuccess') !== -1) return 'success';
+                    var html = document.documentElement.innerHTML.toLowerCase();
+                    if ('$safeSuccess' !== '' && '$safeSuccess' !== 'null' && html.indexOf('$safeSuccess'.toLowerCase()) !== -1) return 'success';
                     
-                    var bodyText = document.body.innerText || '';
+                    var bodyText = (document.body.innerText || '').toLowerCase();
                     if (bodyText.indexOf('تفاصيل الأستخدام') !== -1 || bodyText.indexOf('الوقت المتبقي') !== -1 || bodyText.indexOf('الرصيد المتبقي') !== -1) return 'success';
                     
                     if (document.querySelector('form[action*="logout"]') || document.querySelector('a[href*="logout"]')) return 'success';
                     
                     var logoutBtn = document.querySelector('a[href*="logout"], button[onclick*="logout"], input[value*="تسجيل الخروج"], .info.blue');
                     if (logoutBtn) return 'success';
-                    if (html.indexOf('تسجيل الخروج') !== -1 || html.indexOf('MikroTicket Status') !== -1) return 'success';
+                    if (html.indexOf('تسجيل الخروج') !== -1 || html.indexOf('mikroticket status') !== -1) return 'success';
                     
-                    if ('$safeFailure' !== '' && '$safeFailure' !== 'null' && html.indexOf('$safeFailure') !== -1) return 'failure';
-                    if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('Incomplete') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';
+                    if (bodyText.indexOf('already authorizing') !== -1 || html.indexOf('already authorizing') !== -1) return 'authorizing';
+                    
+                    if ('$safeFailure' !== '' && '$safeFailure' !== 'null' && html.indexOf('$safeFailure'.toLowerCase()) !== -1) return 'failure';
+                    if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('incomplete') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';
                     
                     return 'unknown';
                 })();
                 """.trimIndent()
 
                 var resultStr = evaluateJsSafely(checkJs)
+                
+                if (resultStr == "authorizing") {
+                    Timber.d("[Motasem] Router reports already authorizing. Waiting longer and retrying...")
+                    delay(4000)
+                    resultStr = evaluateJsSafely(checkJs)
+                    if (resultStr == "authorizing") {
+                        if (onRequiresGlobalRelogin != null) {
+                            onRequiresGlobalRelogin()
+                        } else {
+                            val fixAuthJs = """
+                            (function() {
+                                var logoutBtn = document.querySelector('form[name="logout"] button') || document.querySelector('a[href*="logout"]');
+                                if (logoutBtn) logoutBtn.click();
+                            })();
+                            """.trimIndent()
+                            evaluateJsSafely(fixAuthJs)
+                            delay(2000)
+                        }
+                        resultStr = evaluateJsSafely(checkJs)
+                    }
+                }
+                
                 if (resultStr == "unknown") {
                     if (isBlockedBySuccess()) return@withContext false
                     delay(2500)
