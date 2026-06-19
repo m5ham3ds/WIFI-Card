@@ -298,7 +298,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="text"
-                            android:text="تم تسجيل الدخول بنجاح" />
+                            android:text="@string/auto_string_4" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Failure text Indicator -->
@@ -312,7 +312,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="text"
-                            android:text="اسم المستخدم أو كلمة المرور خاطئة" />
+                            android:text="@string/auto_string_5" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
@@ -333,7 +333,7 @@
                     android:layout_height="54dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    android:text="إلغاء الأمر" />
+                    android:text="@string/auto_string_2" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_save_form"
@@ -341,7 +341,7 @@
                     android:layout_width="0dp"
                     android:layout_height="54dp"
                     android:layout_weight="1.2"
-                    android:text="حفظ الإعدادات" />
+                    android:text="@string/auto_string_3" />
             </LinearLayout>
 
         </LinearLayout>

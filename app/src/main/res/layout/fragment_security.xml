@@ -1,105 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="#0A0015">
+    android:orientation="vertical"
+    android:background="#0A0015"
+    android:padding="24dp"
+    android:gravity="center_horizontal"
+    android:layoutDirection="rtl">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_wifi_large"
+        android:contentDescription="WiFi Icon" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/auto_string_41"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/auto_string_42"
+        android:textColor="#DDDDDD"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:layout_marginBottom="32dp" />
 
     <LinearLayout
+        android:id="@+id/ll_info_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal"
-        android:layoutDirection="rtl">
-
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="16dp"
-            android:src="@drawable/ic_wifi_large"
-            android:contentDescription="WiFi Icon" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="اهلاً بك في WiFi Master Pro"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="هذه البرنامج متخصص في عمل تخمينات بطريقة احترافية و مميز و سرعة لكرت الشبكة اي ( كرت الواي فاي )"
-            android:textColor="#DDDDDD"
-            android:textSize="14sp"
-            android:gravity="center"
-            android:layout_marginBottom="32dp" />
+        android:background="@drawable/bg_security_box"
+        android:padding="16dp"
+        android:layout_marginBottom="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_security_box"
-            android:padding="16dp"
-            android:layout_marginBottom="24dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
-                
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_shield_check"
-                    android:layout_marginEnd="12dp"/>
-                    
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:textColor="#FFFFFF"
-                    android:textSize="13sp"
-                    android:text="لكي تستطيع استخدام الخدمة يجب ان تقوم بادخال كلمة السر لفتح معك البرنامج" />
-            </LinearLayout>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
             
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#391F5B"
-                android:layout_marginBottom="16dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_shield_check"
+                android:layout_marginEnd="12dp"/>
                 
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_info_purple"
-                    android:layout_marginEnd="12dp"/>
-                    
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:textColor="#FFFFFF"
-                    android:textSize="13sp"
-                    android:text="ملاحظة هذه الصفحة تظهر فقط عندما تأكون لم تؤكد كلمة السر بعد التأكد ستختفي نهائياً أيضا هناك 3 محاولة فقط لادخال كلمة السر اذا تمت بشكل خاطئ سيقفل البرنامج بل كامل و يطلب منك حذف البرنامج و تثبيته مجددا" />
-            </LinearLayout>
-
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:text="@string/auto_string_43" />
         </LinearLayout>
+        
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#391F5B"
+            android:layout_marginBottom="16dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_info_purple"
+                android:layout_marginEnd="12dp"/>
+                
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:text="@string/auto_string_44" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_input_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -122,7 +124,7 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:hint="قم بإدخال كلمة السر :"
+                android:hint="@string/auto_string_enter_password"
                 android:textColorHint="#888888"
                 android:textColor="#FFFFFF"
                 android:padding="8dp"
@@ -145,50 +147,73 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@drawable/bg_security_button"
-            android:text="تأكيد"
+            android:text="@string/auto_string_40"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginBottom="32dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="المطور : MOHAMED"
-            android:textColor="#DDDDDD"
-            android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="هنا وسائل التواصل الاجتماعي مثل الفيسبوك و التويتر و التلجرام و الانستغرام و الواتساب و التيك توك"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:gravity="center"
-            android:layout_marginBottom="16dp" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <!-- Circular placeholders for social icons -->
-            <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
-            <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
-            <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
-            <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
-            <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
-            <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
-        </LinearLayout>
-
-        <Space android:layout_width="match_parent" android:layout_height="24dp" />
     </LinearLayout>
 
-</ScrollView>
+    <LinearLayout
+        android:id="@+id/ll_verifying_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_marginBottom="32dp">
+
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="16dp"
+            android:indeterminateTint="?attr/colorPrimary"/>
+
+        <TextView
+            android:id="@+id/tv_verifying_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="جاري التحقق من كلمة السر..."
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/auto_string_45"
+        android:textColor="#DDDDDD"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/auto_string_46"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <!-- Circular placeholders for social icons -->
+        <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
+        <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
+        <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
+        <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
+        <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
+        <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
+    </LinearLayout>
+
+    <Space android:layout_width="match_parent" android:layout_height="24dp" />
+</LinearLayout>

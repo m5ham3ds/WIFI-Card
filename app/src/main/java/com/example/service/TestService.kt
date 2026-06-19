@@ -250,16 +250,18 @@ class TestService : Service(), KoinComponent {
                     wv.stopLoading()
                     delay(200)
 
-                    val def = CompletableDeferred<Unit>()
-                    pageLoadedDeferredMap[wv] = def
-                    wv.loadUrl(url)
-                    try {
-                        kotlinx.coroutines.withTimeout(15000) {
-                            def.await()
+                    var isLoaded = false
+                    while (!isLoaded && testJob?.isActive == true) {
+                        try {
+                            val def = CompletableDeferred<Unit>()
+                            pageLoadedDeferredMap[wv] = def
+                            wv.loadUrl(url)
+                            kotlinx.coroutines.withTimeout(20000) { def.await() }
+                            isLoaded = true
+                        } catch (e: Exception) {
+                            Timber.e(e, "Error loading page to check logout state in webview. Retrying...")
+                            delay(3000)
                         }
-                    } catch (e: Exception) {
-                        Timber.e(e, "Error loading page to check logout state in webview.")
-                        return@forEach
                     }
 
                     // Wait for page scripts
@@ -275,13 +277,18 @@ class TestService : Service(), KoinComponent {
                         delay(2500) // wait for logout to process
                         
                         // Load again just to be safe it's on the login page now
-                        val relDef = CompletableDeferred<Unit>()
-                        pageLoadedDeferredMap[wv] = relDef
-                        wv.loadUrl(url)
-                        try {
-                            kotlinx.coroutines.withTimeout(15000) { relDef.await() }
-                        } catch (e: Exception) {
-                            Timber.e(e, "Error loading login page after forced logout.")
+                        var isReloaded = false
+                        while (!isReloaded && testJob?.isActive == true) {
+                            try {
+                                val relDef = CompletableDeferred<Unit>()
+                                pageLoadedDeferredMap[wv] = relDef
+                                wv.loadUrl(url)
+                                kotlinx.coroutines.withTimeout(20000) { relDef.await() }
+                                isReloaded = true
+                            } catch (e: Exception) {
+                                Timber.e(e, "Error loading login page after forced logout. Retrying...")
+                                delay(3000)
+                            }
                         }
                         delay(1000)
                     }
@@ -374,7 +381,11 @@ class TestService : Service(), KoinComponent {
 
                 val workers = webViewPool.mapIndexed { wvIndex, webView ->
                     launch {
-                        for (card in cardQueue) {
+                        var cardToRetry: String? = null
+                        for (rawCard in cardQueue) {
+                            var currentCard = cardToRetry ?: rawCard
+                            cardToRetry = null
+                            
                             // Check pause states
                             while (_serviceState.value.isPaused || isBlockedBySuccess.get() || isRelogging.get()) {
                                 delay(500)
@@ -384,7 +395,7 @@ class TestService : Service(), KoinComponent {
                             stateMutex.withLock {
                                 _serviceState.update {
                                     it.copy(
-                                        currentCard = card,
+                                        currentCard = currentCard,
                                         progress = currentProgress
                                     )
                                 }
@@ -394,15 +405,33 @@ class TestService : Service(), KoinComponent {
                             currentWebViewIndex = wvIndex // For screenshots
                             
                             val startTime = SystemClock.elapsedRealtime()
+                            var wasInterrupted = false
                             val result = try {
-                                // Double check page is loaded (wait if needed)
-                                var def = pageLoadedDeferredMap[webView]
-                                if (def != null) {
-                                    try {
-                                        kotlinx.coroutines.withTimeout(20000) { def.await() }
-                                    } catch (_: Exception) {
-                                        Timber.w("Timeout waiting for initial page load, trying to proceed anyway")
+                                var isPageReady = false
+                                while (!isPageReady && testJob?.isActive == true && !isBlockedBySuccess.get()) {
+                                    var def = pageLoadedDeferredMap[webView]
+                                    if (def == null) {
+                                        def = CompletableDeferred<Unit>()
+                                        pageLoadedDeferredMap[webView] = def
+                                        withContext(Dispatchers.Main) { webView.loadUrl(url) }
                                     }
+                                    try {
+                                        kotlinx.coroutines.withTimeout(25000) { def.await() }
+                                        isPageReady = true
+                                    } catch (e: Exception) {
+                                        Timber.w("Load failed or timed out during test loop. Retrying...")
+                                        delay(3000)
+                                        withContext(Dispatchers.Main) {
+                                            val newDef = CompletableDeferred<Unit>()
+                                            pageLoadedDeferredMap[webView] = newDef
+                                            webView.loadUrl(url)
+                                        }
+                                    }
+                                }
+
+                                if (isBlockedBySuccess.get()) {
+                                    wasInterrupted = true
+                                    throw IllegalStateException("Interrupted by success")
                                 }
                                 
                                 // Extra safety: wait for DOM to be stable and check for reload buttons again
@@ -468,11 +497,15 @@ class TestService : Service(), KoinComponent {
                                     }
                                 }
                                 
-                                testCard(card, router, true, webView, onRequiresGlobalRelogin) { isBlockedBySuccess.get() }
+                                val res = testCard(currentCard, router, true, webView, onRequiresGlobalRelogin) { isBlockedBySuccess.get() }
+                                if (!res && isBlockedBySuccess.get()) {
+                                    wasInterrupted = true
+                                }
+                                res
                             } catch (e: kotlinx.coroutines.CancellationException) {
                                 throw e
                             } catch (e: Exception) {
-                                Timber.e(e, "Worker $wvIndex failed for card: $card")
+                                Timber.e(e, "Worker $wvIndex failed for card: $currentCard")
                                 false
                             }
                             val duration = SystemClock.elapsedRealtime() - startTime
@@ -481,19 +514,42 @@ class TestService : Service(), KoinComponent {
                             if (result) {
                                 isTrueSuccess = isBlockedBySuccess.compareAndSet(false, true)
                                 if (!isTrueSuccess) {
-                                    Timber.w("Card $card reported success, but discarded as false positive (another worker claimed success first)")
+                                    Timber.w("Card $currentCard reported success, but discarded as false positive (another worker claimed success first)")
+                                    wasInterrupted = true
                                 }
+                            }
+
+                            if (wasInterrupted) {
+                                Timber.d("Card $currentCard was interrupted by another thread's success. Will retry later.")
+                                // Re-queue the card that we just popped off
+                                cardToRetry = currentCard
+                                progressCounter.decrementAndGet()
+                                
+                                // Wait for the success lock to be released
+                                while (isBlockedBySuccess.get()) { delay(500) }
+                                
+                                // Reload WebView for this interrupted card
+                                withContext(Dispatchers.Main) {
+                                    webView.evaluateJavascript("document.body.innerHTML = '';", null)
+                                    webView.clearHistory()
+                                    webView.clearFormData()
+                                    val reloadDef = CompletableDeferred<Unit>()
+                                    pageLoadedDeferredMap[webView] = reloadDef
+                                    webView.loadUrl(url)
+                                }
+                                delay(delayMs)
+                                continue // Skip saving result currently, skip to next iteration (which will use cardToRetry)
                             }
 
                             withContext(Dispatchers.IO) {
                                 testResultRepository.insertResult(
                                     TestResultEntity(
                                         sessionId = sessionId,
-                                        cardCode = card,
+                                        cardCode = currentCard,
                                         routerId = routerId,
                                         routerName = router.name,
                                         state = if (isTrueSuccess) "Success" else "Failure",
-                                        message = if (isTrueSuccess) "تم اختبار البطاقة بنجاح" else if (result) "تم إلغاء النتيجة لاكتشاف نجاح بطاقة أخرى أولاً" else "فشلت عملية الاختبار",
+                                        message = if (isTrueSuccess) "تم اختبار البطاقة بنجاح" else "فشلت عملية الاختبار",
                                         durationMs = duration,
                                         testedAt = System.currentTimeMillis()
                                     )
@@ -504,7 +560,7 @@ class TestService : Service(), KoinComponent {
                                 stateMutex.withLock {
                                     _serviceState.update { it.copy(successCount = it.successCount + 1) }
                                 }
-                                notificationHelper.showResultNotification(card, true)
+                                notificationHelper.showResultNotification(currentCard, true)
                                 
                                 delay(1000)
                                 withContext(Dispatchers.Main) {

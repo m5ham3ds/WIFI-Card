@@ -14,7 +14,7 @@
             android:id="@+id/tv_dialog_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ملف تعريف جهاز جديد"
+            android:text="@string/auto_string_7"
             android:textAppearance="?attr/textAppearanceHeadlineSmall"
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />
@@ -137,7 +137,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:text="تم تسجيل الدخول بنجاح" />
+                android:text="@string/auto_string_8" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -150,7 +150,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:text="اسم المستخدم أو كلمة المرور خاطئة" />
+                android:text="@string/auto_string_9" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -177,14 +177,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="إلغاء الأمر"
+                android:text="@string/auto_string_6"
                 style="@style/Widget.Material3.Button.TextButton" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dialog_btn_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="حفظ التعريف" />
+                android:text="@string/auto_string_10" />
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

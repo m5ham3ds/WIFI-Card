@@ -46,7 +46,17 @@ class SecurityViewModel(
                 return@launch
             }
 
-            if (password.equals("MOHAMED564", ignoreCase = false)) { // Requirement stated "MOHAMED564" explicitly, I will make it case sensitive or not depending on requirement. The user said "MOHAMED564" in prompt. Let's stick to exact match or ignore case? User specified "MOHAMED564".
+            _uiState.value = "verifying"
+
+            // Simulate verification delay
+            kotlinx.coroutines.delay(1500)
+
+            if (password == "MOHAMED564") {
+                _uiState.value = "success_verified"
+                
+                // Show success state briefly before redirecting
+                kotlinx.coroutines.delay(2000)
+                
                 appPreferences.setUnlocked(true)
                 _uiState.value = "unlocked"
             } else {
@@ -55,6 +65,7 @@ class SecurityViewModel(
                 if (newFailed >= 3) {
                     _uiState.value = "locked"
                 } else {
+                    _uiState.value = "input"
                     val remaining = 3 - newFailed
                     _errorEvent.value = "كلمة المرور غير صحيحة، تبقى لك ${remaining} محاولة"
                 }

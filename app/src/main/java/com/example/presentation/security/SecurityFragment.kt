@@ -24,6 +24,9 @@ class SecurityFragment : Fragment() {
     private lateinit var etPassword: EditText
     private lateinit var btnConfirm: Button
     private lateinit var tvError: TextView
+    private lateinit var llInputContainer: View
+    private lateinit var llVerifyingContainer: View
+    private lateinit var tvVerifyingMsg: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -37,6 +40,9 @@ class SecurityFragment : Fragment() {
         etPassword = view.findViewById(R.id.et_password)
         btnConfirm = view.findViewById(R.id.btn_confirm)
         tvError = view.findViewById(R.id.tv_error)
+        llInputContainer = view.findViewById(R.id.ll_input_container)
+        llVerifyingContainer = view.findViewById(R.id.ll_verifying_container)
+        tvVerifyingMsg = view.findViewById(R.id.tv_verifying_msg)
 
         btnConfirm.setOnClickListener {
             val pwd = etPassword.text.toString()
@@ -48,6 +54,25 @@ class SecurityFragment : Fragment() {
                 launch {
                     viewModel.uiState.collectLatest { state ->
                         when (state) {
+                            "input" -> {
+                                llInputContainer.visibility = View.VISIBLE
+                                llVerifyingContainer.visibility = View.GONE
+                            }
+                            "verifying" -> {
+                                llInputContainer.visibility = View.GONE
+                                llVerifyingContainer.visibility = View.VISIBLE
+                                val isArabic = com.example.util.LocaleHelper.getPersistedLocale(requireContext()) == "ar"
+                                tvVerifyingMsg.text = if (isArabic) "جاري التحقق من كلمة السر..." else "Verifying password..."
+                                tvVerifyingMsg.setTextColor(android.graphics.Color.WHITE)
+                                tvError.visibility = View.GONE
+                            }
+                            "success_verified" -> {
+                                llInputContainer.visibility = View.GONE
+                                llVerifyingContainer.visibility = View.VISIBLE
+                                val isArabic = com.example.util.LocaleHelper.getPersistedLocale(requireContext()) == "ar"
+                                tvVerifyingMsg.text = if (isArabic) "تم التأكد و جاري تحويلك الى الصفحة الرئيسية..." else "Verified! Redirecting to main page..."
+                                tvVerifyingMsg.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
+                            }
                             "unlocked" -> {
                                 findNavController().navigate(R.id.action_security_to_home)
                             }

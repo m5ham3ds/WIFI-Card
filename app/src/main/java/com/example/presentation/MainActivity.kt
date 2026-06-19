@@ -97,9 +97,23 @@ class MainActivity : AppCompatActivity() {
 
         drawerLayout = findViewById(R.id.drawer_layout)
 
+        val isUnlocked = runBlocking { appPreferences.isUnlocked.first() }
+        val failedAttempts = runBlocking { appPreferences.failedAttempts.first() }
+
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
+        val inflater = navController.navInflater
+        val graph = inflater.inflate(R.id.nav_graph)
+        
+        if (isUnlocked) {
+            graph.setStartDestination(R.id.nav_home_fragment)
+        } else if (failedAttempts >= 3) {
+            graph.setStartDestination(R.id.nav_locked_fragment)
+        } else {
+            graph.setStartDestination(R.id.nav_security_fragment)
+        }
+        navController.graph = graph
 
         appBarConfiguration = AppBarConfiguration(
             setOf(

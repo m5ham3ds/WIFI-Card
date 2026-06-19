@@ -23,7 +23,7 @@
                 android:id="@+id/btn_back_to_sessions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="رجوع للجلسات"
+                android:text="@string/auto_string_21"
                 style="@style/Widget.Material3.Button.TextButton"
                 app:icon="@drawable/ic_back" />
 
@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:text="تصدير النتائج"
+                android:text="@string/auto_string_22"
                 app:icon="@drawable/ic_export" />
         </RelativeLayout>
 
@@ -48,7 +48,7 @@
                 android:id="@+id/chip_filter_all"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="الكل"
+                android:text="@string/auto_string_23"
                 android:checked="true"
                 style="@style/Widget.Material3.Chip.Filter" />
 
@@ -56,14 +56,14 @@
                 android:id="@+id/chip_filter_success"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="الناجحة فقط"
+                android:text="@string/auto_string_24"
                 style="@style/Widget.Material3.Chip.Filter" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_filter_failure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="الفاشلة فقط"
+                android:text="@string/auto_string_25"
                 style="@style/Widget.Material3.Chip.Filter" />
         </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
@@ -98,7 +98,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="لا توجد بيانات سجلات متاحة حالياً"
+            android:text="@string/auto_string_26"
             android:visibility="gone" />
     </FrameLayout>
 </LinearLayout>

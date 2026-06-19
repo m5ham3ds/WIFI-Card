@@ -33,7 +33,7 @@
         android:id="@+id/dialog_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="عنوان التنبيه"
+        android:text="@string/auto_string_11"
         android:textColor="?attr/colorOnSurface"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -45,7 +45,7 @@
         android:id="@+id/dialog_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="هذا هو نص الرسالة التنبيهية لتأكيد العملية أو إظهار الخطأ وتوضيح التفاصيل للتطبيق بشكل ممتاز ومقروء."
+        android:text="@string/auto_string_12"
         android:textColor="?attr/colorOnSurfaceVariant"
         android:textSize="14sp"
         android:gravity="center"
@@ -73,7 +73,7 @@
             style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="تأكيد"
+            android:text="@string/auto_string_13"
             app:backgroundTint="?attr/colorPrimary"
             android:textColor="?attr/colorOnPrimary"
             android:layout_marginBottom="8dp" />
@@ -84,7 +84,7 @@
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="إلغاء"
+            android:text="@string/auto_string_14"
             android:textColor="?attr/colorOnSurface"
             android:layout_marginBottom="8dp"
             android:visibility="gone" />
@@ -95,7 +95,7 @@
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="إغلاق"
+            android:text="@string/auto_string_15"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:visibility="gone" />
 

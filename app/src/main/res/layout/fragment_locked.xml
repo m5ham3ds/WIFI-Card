@@ -26,7 +26,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="تم قفل البرنامج بشكل دائم"
+            android:text="@string/auto_string_48"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:textStyle="bold"
@@ -35,7 +35,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="تم اكتشاف محاولة غير مصرح بها للوصول أو استخدام البرنامج.\nللحفاظ على أمان بياناتك، تم قفل البرنامج بشكل دائم."
+            android:text="@string/auto_string_49"
             android:textColor="#DDDDDD"
             android:textSize="14sp"
             android:gravity="center"
@@ -64,7 +64,7 @@
                 android:gravity="end"
                 android:textColor="#FFFFFF"
                 android:textSize="13sp"
-                android:text="لا يمكن استخدام البرنامج بعد الآن. يرجى حذف التطبيق بالكامل وإعادة تثبيته من المصدر الرسمي." />
+                android:text="@string/auto_string_50" />
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatButton
@@ -72,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@drawable/bg_security_button"
-            android:text="حذف التطبيق"
+            android:text="@string/auto_string_51"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -81,7 +81,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="بعد حذف التطبيق، يرجى إعادة تثبيته من الموقع الرسمي للحصول على نسخة آمنة."
+            android:text="@string/auto_string_52"
             android:textColor="#8855FF"
             android:textSize="12sp"
             android:gravity="center"
@@ -106,7 +106,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="تحتاج إلى مساعدة؟\nتواصل معنا"
+                android:text="@string/auto_string_53"
                 android:textColor="#8855FF"
                 android:textSize="12sp"
                 android:gravity="start" />
@@ -115,7 +115,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="المطور : MOHAMED"
+            android:text="@string/auto_string_47"
             android:textColor="#DDDDDD"
             android:textSize="14sp"
             android:layout_marginBottom="24dp" />

@@ -29,7 +29,7 @@
             android:layout_centerVertical="true"
             android:textColor="@color/wifi_purple_light"
             android:textSize="12sp"
-            android:text="جاري الاختبار" />
+            android:text="@string/auto_string_16" />
 
         <TextView
             android:id="@+id/tv_title"
@@ -60,7 +60,7 @@
             android:layout_alignParentStart="true"
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
-            android:text="فحص بطاقات الهوت سبوت..." />
+            android:text="@string/auto_string_17" />
 
         <TextView
             android:id="@+id/tv_progress_percentage"
@@ -151,7 +151,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp"
-                    android:text="الكل: " />
+                    android:text="@string/auto_string_18" />
                 <TextView
                     android:id="@+id/tv_total_count"
                     android:layout_width="wrap_content"
@@ -190,7 +190,7 @@
                     android:textColor="@color/white"
                     android:textSize="11sp"
                     android:textStyle="bold"
-                    android:text="إيقاف مؤقت" />
+                    android:text="@string/auto_string_19" />
             </LinearLayout>
 
             <!-- Stop/Cancel Button -->
@@ -211,7 +211,7 @@
                     android:textColor="@color/white"
                     android:textSize="11sp"
                     android:textStyle="bold"
-                    android:text="إلغاء وايقاف" />
+                    android:text="@string/auto_string_20" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
