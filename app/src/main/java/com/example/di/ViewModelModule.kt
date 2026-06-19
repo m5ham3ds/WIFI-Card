@@ -14,4 +14,5 @@ val viewModelModule = module {
     viewModel { SettingsViewModel(get(), get(), get(), get()) }
     viewModel { RouterManagerViewModel(get()) }
     viewModel { TestViewModel(get(), get()) }
+    viewModel { com.example.presentation.security.SecurityViewModel(get()) }
 }

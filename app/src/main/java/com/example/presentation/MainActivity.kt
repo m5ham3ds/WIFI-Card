@@ -163,6 +163,21 @@ class MainActivity : AppCompatActivity() {
         // Bottom Nav setup
         val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav)
         bottomNav.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.nav_security_fragment, R.id.nav_locked_fragment -> {
+                    toolbar.visibility = android.view.View.GONE
+                    bottomNav.visibility = android.view.View.GONE
+                    drawerLayout.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                }
+                else -> {
+                    toolbar.visibility = android.view.View.VISIBLE
+                    bottomNav.visibility = android.view.View.VISIBLE
+                    drawerLayout.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED)
+                }
+            }
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

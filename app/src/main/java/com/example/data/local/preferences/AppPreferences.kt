@@ -20,6 +20,8 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
         val KEY_THREAD_COUNT = stringPreferencesKey("thread_count")
         val KEY_DEFAULT_ROUTER_ID = longPreferencesKey("default_router_id")
         val KEY_APP_LANGUAGE = stringPreferencesKey("app_language")
+        val KEY_IS_UNLOCKED = booleanPreferencesKey("is_unlocked")
+        val KEY_FAILED_ATTEMPTS = intPreferencesKey("failed_attempts")
         
         // Home settings state
         val KEY_LAST_CARD_PREFIX = stringPreferencesKey("last_card_prefix")
@@ -48,6 +50,19 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
     }
     val defaultRouterId: Flow<Long> = safeData.map { it[KEY_DEFAULT_ROUTER_ID] ?: 0L }
     val appLanguage: Flow<String> = safeData.map { it[KEY_APP_LANGUAGE] ?: "system" }
+    val isUnlocked: Flow<Boolean> = safeData.map { it[KEY_IS_UNLOCKED] ?: false }
+    val failedAttempts: Flow<Int> = safeData.map { it[KEY_FAILED_ATTEMPTS] ?: 0 }
+
+    suspend fun setUnlocked(isUnlocked: Boolean) {
+        dataStore.edit { it[KEY_IS_UNLOCKED] = isUnlocked }
+    }
+
+    suspend fun incrementFailedAttempts() {
+        dataStore.edit { 
+            val current = it[KEY_FAILED_ATTEMPTS] ?: 0
+            it[KEY_FAILED_ATTEMPTS] = current + 1
+        }
+    }
     
     val lastCardPrefix: Flow<String> = safeData.map { it[KEY_LAST_CARD_PREFIX] ?: "" }
     val lastCardLength: Flow<Int> = safeData.map { it[KEY_LAST_CARD_LENGTH] ?: 6 }
