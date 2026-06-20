@@ -5,15 +5,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#0A0015"
-    android:padding="24dp"
+    android:padding="16dp"
     android:gravity="center_horizontal"
     android:layoutDirection="rtl">
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="16dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
         android:src="@drawable/ic_wifi_large"
         android:contentDescription="WiFi Icon" />
 
@@ -22,9 +22,9 @@
         android:layout_height="wrap_content"
         android:text="@string/auto_string_41"
         android:textColor="#FFFFFF"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="8dp" />
 
     <TextView
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@
         android:textColor="#DDDDDD"
         android:textSize="14sp"
         android:gravity="center"
-        android:layout_marginBottom="32dp" />
+        android:layout_marginBottom="16dp" />
 
     <LinearLayout
         android:id="@+id/ll_info_box"
@@ -41,15 +41,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/bg_security_box"
-        android:padding="16dp"
-        android:layout_marginBottom="24dp">
+        android:padding="12dp"
+        android:layout_marginBottom="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="12dp">
             
             <ImageView
                 android:layout_width="32dp"
@@ -110,7 +110,7 @@
             android:background="@drawable/bg_security_box"
             android:padding="8dp"
             android:gravity="center_vertical"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="16dp">
             
             <ImageView
                 android:layout_width="24dp"
@@ -151,7 +151,7 @@
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginBottom="32dp" />
+            android:layout_marginBottom="16dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -215,5 +215,4 @@
         <ImageView android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_security_box" android:padding="8dp" android:src="@drawable/ic_info_purple" android:layout_margin="4dp"/>
     </LinearLayout>
 
-    <Space android:layout_width="match_parent" android:layout_height="24dp" />
 </LinearLayout>

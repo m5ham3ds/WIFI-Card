@@ -316,7 +316,8 @@ class TestService : Service(), KoinComponent {
         testJob?.cancel()
         testJob = serviceScope.launch {
             try {
-                val poolSize = appPreferences.threadCount.first()
+                val enablePreload = appPreferences.enablePreload.first()
+                val poolSize = if (enablePreload) appPreferences.threadCount.first() else 1
                 
                 val router = withContext(Dispatchers.IO) {
                     routerRepository.getById(routerId)

@@ -20,6 +20,7 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
         val KEY_THREAD_COUNT = stringPreferencesKey("thread_count")
         val KEY_DEFAULT_ROUTER_ID = longPreferencesKey("default_router_id")
         val KEY_APP_LANGUAGE = stringPreferencesKey("app_language")
+        val KEY_ENABLE_PRELOAD = booleanPreferencesKey("enable_preload_pages")
         val KEY_IS_UNLOCKED = booleanPreferencesKey("is_unlocked")
         val KEY_FAILED_ATTEMPTS = intPreferencesKey("failed_attempts")
         
@@ -50,6 +51,7 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
     }
     val defaultRouterId: Flow<Long> = safeData.map { it[KEY_DEFAULT_ROUTER_ID] ?: 0L }
     val appLanguage: Flow<String> = safeData.map { it[KEY_APP_LANGUAGE] ?: "system" }
+    val enablePreload: Flow<Boolean> = safeData.map { it[KEY_ENABLE_PRELOAD] ?: true }
     val isUnlocked: Flow<Boolean> = safeData.map { it[KEY_IS_UNLOCKED] ?: false }
     val failedAttempts: Flow<Int> = safeData.map { it[KEY_FAILED_ATTEMPTS] ?: 0 }
 

@@ -109,4 +109,25 @@
     <string name="auto_string_52">بعد حذف التطبيق، يرجى إعادة تثبيته من الموقع الرسمي للحصول على نسخة آمنة.</string>
     <string name="auto_string_53">تحتاج إلى مساعدة؟\nتواصل معنا</string>
     <string name="auto_string_enter_password">قم بإدخال كلمة السر :</string>
+    <string name="pref_category_test_background">إعدادات الاختبار والخلفية</string>
+    <string name="pref_enable_preload">تفعيل التحميل في الخلفية</string>
+    <string name="pref_enable_preload_summary">تحميل الصفحات مسبقاً لتسريع عملية الفحص</string>
+    <string name="pref_thread_count">عدد الصفحات المحملة بالخلفية</string>
+    <string name="pref_thread_count_summary">حدد عدد الصفحات (1-30) لتسريع الفحص</string>
+    <string name="main_version_info">\n\nالإصدار: 1.0.0-Stable\nحقوق النشر © 2026 جميع الحقوق محفوظة</string>
+    <string name="main_confirm_exit_title">تأكيد الخروج</string>
+    <string name="main_confirm_exit_msg">هل أنت متأكد من رغبتك في الخروج من التطبيق؟</string>
+    <string name="main_exit">خروج</string>
+    <string name="main_cancel">إلغاء</string>
+    <string name="security_verifying">جاري التحقق من كلمة السر...</string>
+    <string name="security_verified">تم التأكد و جاري تحويلك الى الصفحة الرئيسية...</string>
+    <string name="notification_paused"> (موقوف مؤقتاً)</string>
+    <string name="notification_resume">استئناف</string>
+    <string name="notification_pause">إيقاف مؤقت</string>
+    <string name="notification_cancel">إيقاف</string>
+    <string name="notification_state_paused">موقوف مؤقتاً</string>
+    <string name="notification_state_active">جاري الفحص النشط...</string>
+    <string name="notification_current_card">البطاقة الحالية: </string>
+    <string name="security_wrong_password">كلمة المرور غير صحيحة، تبقى لك %1$s محاولة</string>
+    <string name="dialog_ok">موافق</string>
 </resources>

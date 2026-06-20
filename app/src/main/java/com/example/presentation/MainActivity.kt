@@ -138,9 +138,7 @@ class MainActivity : AppCompatActivity() {
             }
             when (menuItem.itemId) {
                 R.id.action_about -> {
-                    val isArabic = com.example.util.LocaleHelper.getPersistedLocale(this) == "ar"
-                    val versionText = if (isArabic) "\n\nالإصدار: 1.0.0-Stable\nحقوق النشر © 2026 جميع الحقوق محفوظة" 
-                                      else "\n\nVersion: 1.0.0-Stable\nCopyright © 2026 All Rights Reserved"
+                    val versionText = getString(R.string.main_version_info)
                     com.example.util.DialogHelper.showCustomDialog(
                         context = this,
                         title = getString(R.string.about_title),
@@ -151,11 +149,10 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
                 R.id.action_exit -> {
-                    val isArabic = com.example.util.LocaleHelper.getPersistedLocale(this) == "ar"
-                    val titleText = if (isArabic) "تأكيد الخروج" else "Confirm Exit"
-                    val msgText = if (isArabic) "هل أنت متأكد من رغبتك في الخروج من التطبيق؟" else "Are you sure you want to exit the application?"
-                    val posText = if (isArabic) "خروج" else "Exit"
-                    val negText = if (isArabic) "إلغاء" else "Cancel"
+                    val titleText = getString(R.string.main_confirm_exit_title)
+                    val msgText = getString(R.string.main_confirm_exit_msg)
+                    val posText = getString(R.string.main_exit)
+                    val negText = getString(R.string.main_cancel)
                     com.example.util.DialogHelper.showCustomDialog(
                         context = this,
                         title = titleText,

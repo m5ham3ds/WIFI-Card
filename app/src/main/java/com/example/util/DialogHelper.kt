@@ -80,7 +80,7 @@ object DialogHelper {
         if (positiveButtonText != null) {
             btnPositive.text = positiveButtonText
         } else {
-            btnPositive.text = "موافق"
+            btnPositive.text = context.getString(R.string.dialog_ok)
         }
         btnPositive.setOnClickListener {
             dialog.dismiss()

@@ -61,16 +61,14 @@ class SecurityFragment : Fragment() {
                             "verifying" -> {
                                 llInputContainer.visibility = View.GONE
                                 llVerifyingContainer.visibility = View.VISIBLE
-                                val isArabic = com.example.util.LocaleHelper.getPersistedLocale(requireContext()) == "ar"
-                                tvVerifyingMsg.text = if (isArabic) "جاري التحقق من كلمة السر..." else "Verifying password..."
+                                tvVerifyingMsg.text = getString(R.string.security_verifying)
                                 tvVerifyingMsg.setTextColor(android.graphics.Color.WHITE)
                                 tvError.visibility = View.GONE
                             }
                             "success_verified" -> {
                                 llInputContainer.visibility = View.GONE
                                 llVerifyingContainer.visibility = View.VISIBLE
-                                val isArabic = com.example.util.LocaleHelper.getPersistedLocale(requireContext()) == "ar"
-                                tvVerifyingMsg.text = if (isArabic) "تم التأكد و جاري تحويلك الى الصفحة الرئيسية..." else "Verified! Redirecting to main page..."
+                                tvVerifyingMsg.text = getString(R.string.security_verified)
                                 tvVerifyingMsg.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
                             }
                             "unlocked" -> {
@@ -86,7 +84,7 @@ class SecurityFragment : Fragment() {
                 launch {
                     viewModel.errorEvent.collectLatest { err ->
                         if (err != null) {
-                            tvError.text = err
+                            tvError.text = getString(R.string.security_wrong_password, err)
                             tvError.visibility = View.VISIBLE
                             viewModel.clearError()
                         }

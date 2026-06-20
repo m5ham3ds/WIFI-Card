@@ -109,4 +109,25 @@
     <string name="auto_string_52">After deleting, please reinstall from the official site.</string>
     <string name="auto_string_53">Need Help?\nContact us</string>
     <string name="auto_string_enter_password">Enter password :</string>
+    <string name="pref_category_test_background">Test and Background Settings</string>
+    <string name="pref_enable_preload">Enable Background Preloading</string>
+    <string name="pref_enable_preload_summary">Preload pages to speed up the testing process</string>
+    <string name="pref_thread_count">Number of Background Pages</string>
+    <string name="pref_thread_count_summary">Select the number of pages (1-30) to accelerate scanning</string>
+    <string name="main_version_info">\n\nVersion: 1.0.0-Stable\nCopyright © 2026 All Rights Reserved</string>
+    <string name="main_confirm_exit_title">Confirm Exit</string>
+    <string name="main_confirm_exit_msg">Are you sure you want to exit the application?</string>
+    <string name="main_exit">Exit</string>
+    <string name="main_cancel">Cancel</string>
+    <string name="security_verifying">Verifying password...</string>
+    <string name="security_verified">Verified! Redirecting to main page...</string>
+    <string name="notification_paused"> (Paused)</string>
+    <string name="notification_resume">Resume</string>
+    <string name="notification_pause">Pause</string>
+    <string name="notification_cancel">Cancel</string>
+    <string name="notification_state_paused">Paused</string>
+    <string name="notification_state_active">Active testing...</string>
+    <string name="notification_current_card">Current Card: </string>
+    <string name="security_wrong_password">Wrong password, you have %1$s attempts remaining</string>
+    <string name="dialog_ok">OK</string>
 </resources>

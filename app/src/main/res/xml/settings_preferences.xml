@@ -30,11 +30,16 @@
             app:defaultValue="false" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="إعدادات الاختبار والخلفية">
+    <PreferenceCategory app:title="@string/pref_category_test_background">
+        <SwitchPreferenceCompat
+            app:key="enable_preload_pages"
+            app:title="@string/pref_enable_preload"
+            app:summary="@string/pref_enable_preload_summary"
+            app:defaultValue="true" />
         <ListPreference
             app:key="thread_count"
-            app:title="عدد الصفحات المحملة بالخلفية"
-            app:summary="حدد عدد الصفحات (1-30) لتسريع الفحص"
+            app:title="@string/pref_thread_count"
+            app:summary="@string/pref_thread_count_summary"
             app:entries="@array/preload_pages_entries"
             app:entryValues="@array/preload_pages_values"
             app:defaultValue="5"

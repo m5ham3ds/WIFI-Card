@@ -67,7 +67,7 @@ class SecurityViewModel(
                 } else {
                     _uiState.value = "input"
                     val remaining = 3 - newFailed
-                    _errorEvent.value = "كلمة المرور غير صحيحة، تبقى لك ${remaining} محاولة"
+                    _errorEvent.value = remaining.toString()
                 }
             }
         }

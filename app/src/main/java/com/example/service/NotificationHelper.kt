@@ -85,9 +85,8 @@ class NotificationHelper(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val isArabic = LocaleHelper.getPersistedLocale(context) == "ar"
         val titleSuffix = if (state.isPaused) {
-            if (isArabic) " (موقوف مؤقتاً)" else " (Paused)"
+            context.getString(R.string.notification_paused)
         } else {
             ""
         }
@@ -102,11 +101,11 @@ class NotificationHelper(private val context: Context) {
         )
 
         val pauseLabel = if (state.isPaused) {
-            if (isArabic) "استئناف" else "Resume"
+            context.getString(R.string.notification_resume)
         } else {
-            if (isArabic) "إيقاف مؤقت" else "Pause"
+            context.getString(R.string.notification_pause)
         }
-        val cancelLabel = if (isArabic) "إيقاف" else "Cancel"
+        val cancelLabel = context.getString(R.string.notification_cancel)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_TEST_ID)
             .setSmallIcon(R.drawable.ic_router)
@@ -128,14 +127,14 @@ class NotificationHelper(private val context: Context) {
                     setTextViewText(R.id.tv_title, baseTitle)
                     
                     val statusLabel = if (state.isPaused) {
-                        if (isArabic) "موقوف مؤقتاً" else "Paused"
+                        context.getString(R.string.notification_state_paused)
                     } else {
-                        if (isArabic) "جاري الفحص النشط..." else "Active testing..."
+                        context.getString(R.string.notification_state_active)
                     }
                     setTextViewText(R.id.tv_status, statusLabel)
                     
                     val cardDisplay = if (state.currentCard.isEmpty()) "---" else state.currentCard
-                    val detailsText = (if (isArabic) "البطاقة الحالية: " else "Current Card: ") + cardDisplay + " | " + baseContent
+                    val detailsText = context.getString(R.string.notification_current_card) + cardDisplay + " | " + baseContent
                     setTextViewText(R.id.tv_card_info, detailsText)
                     
                     val pct = if (state.total > 0) (state.progress * 100 / state.total) else 0
