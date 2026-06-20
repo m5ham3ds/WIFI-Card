@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:background="#0A0015"
     android:padding="16dp"
-    android:gravity="center_horizontal"
+    android:gravity="center"
     android:layoutDirection="rtl">
 
     <ImageView
@@ -173,15 +173,10 @@
             android:id="@+id/tv_verifying_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="جاري التحقق من كلمة السر..."
+            android:text="@string/security_verifying"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -189,6 +184,7 @@
         android:text="@string/auto_string_45"
         android:textColor="#DDDDDD"
         android:textSize="14sp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp" />
 
     <TextView

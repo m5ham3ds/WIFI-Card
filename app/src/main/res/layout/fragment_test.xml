@@ -23,7 +23,7 @@
                 android:id="@+id/tv_test_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="حالة الاختبار: جاري التهيأة..."
+                android:text="@string/test_status_init"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textStyle="bold" />
 
@@ -46,7 +46,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="بث حي ومباشر من المتصفح المعزول:"
+        android:text="@string/test_live_stream"
         android:textStyle="bold"
         android:layout_marginBottom="6dp" />
 
@@ -100,7 +100,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="إلغاء وفصل"
+            android:text="@string/test_cancel_log"
             app:backgroundTint="?attr/colorError"
             android:enabled="false" />
     </LinearLayout>

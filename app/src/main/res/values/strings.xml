@@ -130,4 +130,7 @@
     <string name="notification_current_card">Current Card: </string>
     <string name="security_wrong_password">Wrong password, you have %1$s attempts remaining</string>
     <string name="dialog_ok">OK</string>
+    <string name="test_status_init">Test Status: Initializing...</string>
+    <string name="test_live_stream">Live Stream from Isolated Browser:</string>
+    <string name="test_cancel_log">Cancel and Disconnect</string>
 </resources>
