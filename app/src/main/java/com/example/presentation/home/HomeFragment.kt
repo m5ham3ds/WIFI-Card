@@ -129,10 +129,10 @@ class HomeFragment : Fragment() {
             if (viewModel.connectionState.value == HomeViewModel.ConnectionState.DISCONNECTED) {
                 com.example.util.DialogHelper.showCustomDialog(
                     context = requireContext(),
-                    title = "تنبيه: غير متصل بالواي فاي",
-                    message = "أنت غير متصل بشبكة الواي فاي حالياً. يرجى الاتصال بالشبكة لكي تتمكن من الوصول لصفحة تسجيل دخول الراوتر واختبار البطاقات بنجاح.",
+                    title = "\u062A\u0646\u0628\u064A\u0647: \u063A\u064A\u0631 \u0645\u062A\u0635\u0644 \u0628\u0627\u0644\u0648\u0627\u064A \u0641\u0627\u064A",
+                    message = "\u0623\u0646\u062A \u063A\u064A\u0631 \u0645\u062A\u0635\u0644 \u0628\u0634\u0628\u0643\u0629 \u0627\u0644\u0648\u0627\u064A \u0641\u0627\u064A \u062D\u0627\u0644\u064A\u0627\u064B. \u064A\u0631\u062C\u0649 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u0634\u0628\u0643\u0629 \u0644\u0643\u064A \u062A\u062A\u0645\u0643\u0646 \u0645\u0646 \u0627\u0644\u0648\u0635\u0648\u0644 \u0644\u0635\u0641\u062D\u0629 \u062A\u0633\u062C\u064A\u0644 \u062F\u062E\u0648\u0644 \u0627\u0644\u0631\u0627\u0648\u062A\u0631 \u0648\u0627\u062E\u062A\u0628\u0627\u0631 \u0627\u0644\u0628\u0637\u0627\u0642\u0627\u062A \u0628\u0646\u062C\u0627\u062D.",
                     dialogType = com.example.util.DialogHelper.DialogType.ERROR,
-                    positiveButtonText = "حسناً، فهمت"
+                    positiveButtonText = "\u062D\u0633\u0646\u0627\u064B\u060C \u0641\u0647\u0645\u062A"
                 )
                 return@setOnClickListener
             }
@@ -140,10 +140,10 @@ class HomeFragment : Fragment() {
             if (viewModel.isServiceRunning().value) {
                 com.example.util.DialogHelper.showCustomDialog(
                     context = requireContext(),
-                    title = "عملية جارية بالفعل",
-                    message = "هناك عملية فحص جارية حالياً على الراوتر المختار. هل تود إلغاء العملية الجارية والبدء مجدداً بعملية فحص جديدة، أم تود المتابعة ومراقبة الفحص الحالي؟",
+                    title = "\u0639\u0645\u0644\u064A\u0629 \u062C\u0627\u0631\u064A\u0629 \u0628\u0627\u0644\u0641\u0639\u0644",
+                    message = "\u0647\u0646\u0627\u0643 \u0639\u0645\u0644\u064A\u0629 \u0641\u062D\u0635 \u062C\u0627\u0631\u064A\u0629 \u062D\u0627\u0644\u064A\u0627\u064B \u0639\u0644\u0649 \u0627\u0644\u0631\u0627\u0648\u062A\u0631 \u0627\u0644\u0645\u062E\u062A\u0627\u0631. \u0647\u0644 \u062A\u0648\u062F \u0625\u0644\u063A\u0627\u0621 \u0627\u0644\u0639\u0645\u0644\u064A\u0629 \u0627\u0644\u062C\u0627\u0631\u064A\u0629 \u0648\u0627\u0644\u0628\u062F\u0621 \u0645\u062C\u062F\u062F\u0627\u064B \u0628\u0639\u0645\u0644\u064A\u0629 \u0641\u062D\u0635 \u062C\u062F\u064A\u062F\u0629\u060C \u0623\u0645 \u062A\u0648\u062F \u0627\u0644\u0645\u062A\u0627\u0628\u0639\u0629 \u0648\u0645\u0631\u0627\u0642\u0628\u0629 \u0627\u0644\u0641\u062D\u0635 \u0627\u0644\u062D\u0627\u0644\u064A\u061F",
                     dialogType = com.example.util.DialogHelper.DialogType.WARNING,
-                    positiveButtonText = "إلغاء والبدء من جديد",
+                    positiveButtonText = "\u0625\u0644\u063A\u0627\u0621 \u0648\u0627\u0644\u0628\u062F\u0621 \u0645\u0646 \u062C\u062F\u064A\u062F",
                     positiveAction = {
                         // 1. Cancel previous service
                         val serviceIntent = Intent(requireContext(), TestService::class.java).apply {
@@ -160,7 +160,7 @@ class HomeFragment : Fragment() {
                             delayMs = 2000L
                         )
                     },
-                    negativeButtonText = "المتابعة ومراقبة الفحص الحالي",
+                    negativeButtonText = "\u0627\u0644\u0645\u062A\u0627\u0628\u0639\u0629 \u0648\u0645\u0631\u0627\u0642\u0628\u0629 \u0627\u0644\u0641\u062D\u0635 \u0627\u0644\u062D\u0627\u0644\u064A",
                     negativeAction = {
                         // Go to test fragment monitoring page
                         val routerId = viewModel.selectedRouterId.value
@@ -175,7 +175,7 @@ class HomeFragment : Fragment() {
                             Timber.e(e, "Failed to navigate to test fragment safely")
                         }
                     },
-                    neutralButtonText = "إغلاق"
+                    neutralButtonText = "\u0625\u063A\u0644\u0627\u0642"
                 )
             } else {
                 viewModel.generateAndStart(
@@ -191,33 +191,33 @@ class HomeFragment : Fragment() {
         btnStop.setOnClickListener {
             com.example.util.DialogHelper.showCustomDialog(
                 context = requireContext(),
-                title = "تأكيد إلغاء الفحص الجاري",
-                message = "هل أنت متأكد من رغبتك في إلغاء عملية الفحص الجارية للبطاقات؟ سيتم إيقاف فحص وتجربة البطاقات كلياً.",
+                title = "\u062A\u0623\u0643\u064A\u062F \u0625\u0644\u063A\u0627\u0621 \u0627\u0644\u0641\u062D\u0635 \u0627\u0644\u062C\u0627\u0631\u064A",
+                message = "\u0647\u0644 \u0623\u0646\u062A \u0645\u062A\u0623\u0643\u062F \u0645\u0646 \u0631\u063A\u0628\u062A\u0643 \u0641\u064A \u0625\u0644\u063A\u0627\u0621 \u0639\u0645\u0644\u064A\u0629 \u0627\u0644\u0641\u062D\u0635 \u0627\u0644\u062C\u0627\u0631\u064A\u0629 \u0644\u0644\u0628\u0637\u0627\u0642\u0627\u062A\u061F \u0633\u064A\u062A\u0645 \u0625\u064A\u0642\u0627\u0641 \u0641\u062D\u0635 \u0648\u062A\u062C\u0631\u0628\u0629 \u0627\u0644\u0628\u0637\u0627\u0642\u0627\u062A \u0643\u0644\u064A\u0627\u064B.",
                 dialogType = com.example.util.DialogHelper.DialogType.WARNING,
-                positiveButtonText = "نعم، إلغاء الفحص",
+                positiveButtonText = "\u0646\u0639\u0645\u060C \u0625\u0644\u063A\u0627\u0621 \u0627\u0644\u0641\u062D\u0635",
                 positiveAction = {
                     val serviceIntent = Intent(requireContext(), TestService::class.java).apply {
                         action = TestService.ACTION_CANCEL
                     }
                     requireContext().startService(serviceIntent)
-                    com.example.util.ToastHelper.showSuccessToast(requireContext(), "تم إلغاء عملية الفحص بنجاح!")
+                    com.example.util.ToastHelper.showSuccessToast(requireContext(), "\u062A\u0645 \u0625\u0644\u063A\u0627\u0621 \u0639\u0645\u0644\u064A\u0629 \u0627\u0644\u0641\u062D\u0635 \u0628\u0646\u062C\u0627\u062D!")
                 },
-                negativeButtonText = "لا، استمرار العمل"
+                negativeButtonText = "\u0644\u0627\u060C \u0627\u0633\u062A\u0645\u0631\u0627\u0631 \u0627\u0644\u0639\u0645\u0644"
             )
         }
 
         btnClearLog.setOnClickListener {
             com.example.util.DialogHelper.showCustomDialog(
                 context = requireContext(),
-                title = "تأكيد حذف السجلات",
-                message = "هل أنت متأكد من رغبتك في حذف جميع سجلات الفحص والبطاقات وتصفير الإحصائيات بالكامل؟ لا يمكن التراجع عن هذا الإجراء.",
+                title = "\u062A\u0623\u0643\u064A\u062F \u062D\u0630\u0641 \u0627\u0644\u0633\u062C\u0644\u0627\u062A",
+                message = "\u0647\u0644 \u0623\u0646\u062A \u0645\u062A\u0623\u0643\u062F \u0645\u0646 \u0631\u063A\u0628\u062A\u0643 \u0641\u064A \u062D\u0630\u0641 \u062C\u0645\u064A\u0639 \u0633\u062C\u0644\u0627\u062A \u0627\u0644\u0641\u062D\u0635 \u0648\u0627\u0644\u0628\u0637\u0627\u0642\u0627\u062A \u0648\u062A\u0635\u0641\u064A\u0631 \u0627\u0644\u0625\u062D\u0635\u0627\u0626\u064A\u0627\u062A \u0628\u0627\u0644\u0643\u0627\u0645\u0644\u061F \u0644\u0627 \u064A\u0645\u0643\u0646 \u0627\u0644\u062A\u0631\u0627\u062C\u0639 \u0639\u0646 \u0647\u0630\u0627 \u0627\u0644\u0625\u062C\u0631\u0627\u0621.",
                 dialogType = com.example.util.DialogHelper.DialogType.WARNING,
-                positiveButtonText = "نعم، احذف وصفر الإحصائيات",
+                positiveButtonText = "\u0646\u0639\u0645\u060C \u0627\u062D\u0630\u0641 \u0648\u0635\u0641\u0631 \u0627\u0644\u0625\u062D\u0635\u0627\u0626\u064A\u0627\u062A",
                 positiveAction = {
                     viewModel.clearLogs()
-                    com.example.util.ToastHelper.showSuccessToast(requireContext(), "تم مسح جميع السجلات وتصفير الإعدادات بنجاح!")
+                    com.example.util.ToastHelper.showSuccessToast(requireContext(), "\u062A\u0645 \u0645\u0633\u062D \u062C\u0645\u064A\u0639 \u0627\u0644\u0633\u062C\u0644\u0627\u062A \u0648\u062A\u0635\u0641\u064A\u0631 \u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A \u0628\u0646\u062C\u0627\u062D!")
                 },
-                negativeButtonText = "إلغاء وإبقاء"
+                negativeButtonText = "\u0625\u0644\u063A\u0627\u0621 \u0648\u0625\u0628\u0642\u0627\u0621"
             )
         }
 
@@ -286,9 +286,9 @@ class HomeFragment : Fragment() {
                 launch {
                     viewModel.statistics.collectLatest { stats ->
                         val ctx = context ?: return@collectLatest
-                        cardSent.bind("الإجمالي المولد", stats.total.toString())
-                        cardSuccess.bind("البطاقات الناجحة", stats.success.toString(), ContextCompat.getColor(ctx, android.R.color.holo_green_dark))
-                        cardFailed.bind("البطاقات الفاشلة", stats.failure.toString(), ContextCompat.getColor(ctx, android.R.color.holo_red_dark))
+                        cardSent.bind("\u0627\u0644\u0625\u062C\u0645\u0627\u0644\u064A \u0627\u0644\u0645\u0648\u0644\u062F", stats.total.toString())
+                        cardSuccess.bind("\u0627\u0644\u0628\u0637\u0627\u0642\u0627\u062A \u0627\u0644\u0646\u0627\u062C\u062D\u0629", stats.success.toString(), ContextCompat.getColor(ctx, android.R.color.holo_green_dark))
+                        cardFailed.bind("\u0627\u0644\u0628\u0637\u0627\u0642\u0627\u062A \u0627\u0644\u0641\u0627\u0634\u0644\u0629", stats.failure.toString(), ContextCompat.getColor(ctx, android.R.color.holo_red_dark))
 
                         if (stats.total > 0) {
                             val pct = (stats.success + stats.failure) * 100 / stats.total
@@ -338,7 +338,7 @@ class HomeFragment : Fragment() {
                             ContextCompat.startForegroundService(ctx, serviceIntent)
                         } catch (e: Exception) {
                             Timber.e(e, "Failed to start TestService in foreground")
-                            com.example.util.ToastHelper.showErrorToast(ctx, "فشل بدء خدمة المزامنة بالخلفية: ${e.localizedMessage}")
+                            com.example.util.ToastHelper.showErrorToast(ctx, "\u0641\u0634\u0644 \u0628\u062F\u0621 \u062E\u062F\u0645\u0629 \u0627\u0644\u0645\u0632\u0627\u0645\u0646\u0629 \u0628\u0627\u0644\u062E\u0644\u0641\u064A\u0629: ${e.localizedMessage}")
                         }
 
                         // Navigate to TestFragment using bundle for maximum compile safety

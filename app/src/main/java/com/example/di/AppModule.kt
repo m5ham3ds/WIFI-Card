@@ -40,15 +40,15 @@ val appModule = module {
                 try {
                     db.execSQL(
                         "INSERT INTO router_profiles (name, ip, protocol, username, password, login_path, username_selector, password_selector, submit_selector, logout_selector, success_indicator, failure_indicator, is_active, is_default, created_at, auth_type, md5_salt) " +
-                        "VALUES ('شبكة معتصم نت', 'r.com', 'http', 'admin', '', '/login', 'input[name=username]', 'input[name=password]', 'button[type=submit]', 'button[type=submit]', 'id=\"timeLeft\"', 'خطأ', 1, 1, " + System.currentTimeMillis() + ", 'FORM', '')"
+                        "VALUES ('\\u0634\\u0628\\u0643\\u0629 \\u0645\\u0639\\u062A\\u0635\\u0645 \\u0646\\u062A', 'r.com', 'http', 'admin', '', '/login', 'input[name=username]', 'input[name=password]', 'button[type=submit]', 'button[type=submit]', 'id=\"timeLeft\"', '\\u062E\\u0637\\u0623', 1, 1, " + System.currentTimeMillis() + ", 'FORM', '')"
                     )
                     db.execSQL(
                         "INSERT INTO router_profiles (name, ip, protocol, username, password, login_path, username_selector, password_selector, submit_selector, logout_selector, success_indicator, failure_indicator, is_active, is_default, created_at, auth_type, md5_salt) " +
-                        "VALUES ('بيلو', 'www.bello.com', 'http', 'admin', '', '/login', '#uname', 'input[name=password]', 'button[type=submit]', 'button[type=submit]', 'id=\"timeLeft\"', 'خطأ', 1, 0, " + System.currentTimeMillis() + ", 'FORM', '')"
+                        "VALUES ('\\u0628\\u064A\\u0644\\u0648', 'www.bello.com', 'http', 'admin', '', '/login', '#uname', 'input[name=password]', 'button[type=submit]', 'button[type=submit]', 'id=\"timeLeft\"', '\\u062E\\u0637\\u0623', 1, 0, " + System.currentTimeMillis() + ", 'FORM', '')"
                     )
                     db.execSQL(
                         "INSERT INTO router_profiles (name, ip, protocol, username, password, login_path, username_selector, password_selector, submit_selector, logout_selector, success_indicator, failure_indicator, is_active, is_default, created_at, auth_type, md5_salt) " +
-                        "VALUES ('شبكة الباشا', 'www.Abasha.com', 'http', 'admin', '', '/login', 'input[name=username]', 'input[name=password]', 'input[type=submit]', 'form[id=mForm]', 'MikroTicket Status', 'خطأ', 1, 0, " + System.currentTimeMillis() + ", 'FORM', '')"
+                        "VALUES ('\\u0634\\u0628\\u0643\\u0629 \\u0627\\u0644\\u0628\\u0627\\u0634\\u0627', 'www.Abasha.com', 'http', 'admin', '', '/login', 'input[name=username]', 'input[name=password]', 'input[type=submit]', 'form[id=mForm]', 'MikroTicket Status', '\\u062E\\u0637\\u0623', 1, 0, " + System.currentTimeMillis() + ", 'FORM', '')"
                     )
                 } catch (e: Exception) {
                     timber.log.Timber.e(e, "Failed to prepopulate default router in database onCreate")

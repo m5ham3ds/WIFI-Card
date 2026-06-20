@@ -118,7 +118,7 @@ class TestService : Service(), KoinComponent {
                             var buttons = document.querySelectorAll('button, a, input[type="button"]');
                             for (var i = 0; i < buttons.length; i++) {
                                 var text = (buttons[i].innerText || buttons[i].value || '').toLowerCase();
-                                if (text.indexOf('إعادة تحميل') !== -1 || text.indexOf('retry') !== -1 || text.indexOf('reload') !== -1 || text.indexOf('تحديث') !== -1) {
+                                if (text.indexOf('\u0625\u0639\u0627\u062F\u0629 \u062A\u062D\u0645\u064A\u0644') !== -1 || text.indexOf('retry') !== -1 || text.indexOf('reload') !== -1 || text.indexOf('\u062A\u062D\u062F\u064A\u062B') !== -1) {
                                     buttons[i].click();
                                     return true;
                                 }
@@ -154,7 +154,7 @@ class TestService : Service(), KoinComponent {
                             Timber.d("Ignoring ERR_ABORTED for main frame")
                             return
                         }
-                        val errMsg = error?.description?.toString() ?: "فشل تحميل الصفحة"
+                        val errMsg = error?.description?.toString() ?: "\u0641\u0634\u0644 \u062A\u062D\u0645\u064A\u0644 \u0627\u0644\u0635\u0641\u062D\u0629"
                         view?.let { pageLoadedDeferredMap[it]?.completeExceptionally(Exception(errMsg)) }
                     }
                 }
@@ -443,7 +443,7 @@ class TestService : Service(), KoinComponent {
                                         var buttons = document.querySelectorAll('button, a, input[type="button"]');
                                         for (var i = 0; i < buttons.length; i++) {
                                             var text = (buttons[i].innerText || buttons[i].value || '').toLowerCase();
-                                            if (text.indexOf('إعادة تحميل') !== -1 || text.indexOf('retry') !== -1 || text.indexOf('reload') !== -1) {
+                                            if (text.indexOf('\u0625\u0639\u0627\u062F\u0629 \u062A\u062D\u0645\u064A\u0644') !== -1 || text.indexOf('retry') !== -1 || text.indexOf('reload') !== -1) {
                                                 buttons[i].click();
                                                 return 'clicked_reload';
                                             }
@@ -550,7 +550,7 @@ class TestService : Service(), KoinComponent {
                                         routerId = routerId,
                                         routerName = router.name,
                                         state = if (isTrueSuccess) "Success" else "Failure",
-                                        message = if (isTrueSuccess) "تم اختبار البطاقة بنجاح" else "فشلت عملية الاختبار",
+                                        message = if (isTrueSuccess) "\u062A\u0645 \u0627\u062E\u062A\u0628\u0627\u0631 \u0627\u0644\u0628\u0637\u0627\u0642\u0629 \u0628\u0646\u062C\u0627\u062D" else "\u0641\u0634\u0644\u062A \u0639\u0645\u0644\u064A\u0629 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631",
                                         durationMs = duration,
                                         testedAt = System.currentTimeMillis()
                                     )
@@ -615,13 +615,13 @@ class TestService : Service(), KoinComponent {
 
     private suspend fun testCard(card: String, router: RouterProfileEntity, isPreloaded: Boolean, webViewToUse: WebView? = activeWebView, onRequiresGlobalRelogin: (suspend () -> Unit)? = null, isBlockedBySuccess: () -> Boolean = { false }): Boolean {
         val wv = webViewToUse ?: activeWebView
-        if (router.name.contains("معتصم", ignoreCase = true) || router.name.contains("motasem", ignoreCase = true)) {
+        if (router.name.contains("\u0645\u0639\u062A\u0635\u0645", ignoreCase = true) || router.name.contains("motasem", ignoreCase = true)) {
             return testMotasemCard(card, router, isPreloaded, wv, onRequiresGlobalRelogin, isBlockedBySuccess)
         }
-        if (router.name.contains("بيلو", ignoreCase = true) || router.name.contains("bello", ignoreCase = true)) {
+        if (router.name.contains("\u0628\u064A\u0644\u0648", ignoreCase = true) || router.name.contains("bello", ignoreCase = true)) {
             return testBelloCard(card, router, isPreloaded, wv, onRequiresGlobalRelogin, isBlockedBySuccess)
         }
-        if (router.name.contains("اباشا", ignoreCase = true) || router.name.contains("abasha", ignoreCase = true) || router.name.contains("الباشا", ignoreCase = true)) {
+        if (router.name.contains("\u0627\u0628\u0627\u0634\u0627", ignoreCase = true) || router.name.contains("abasha", ignoreCase = true) || router.name.contains("\u0627\u0644\u0628\u0627\u0634\u0627", ignoreCase = true)) {
             return testAbashaCard(card, router, isPreloaded, wv, onRequiresGlobalRelogin, isBlockedBySuccess)
         }
         
@@ -671,7 +671,7 @@ class TestService : Service(), KoinComponent {
                     if (document.readyState !== 'complete') return 'not_ready';
                     
                     var html = document.documentElement.innerHTML || '';
-                    if (html.toLowerCase().indexOf('logout') !== -1 || html.indexOf('تسجيل الخروج') !== -1) {
+                    if (html.toLowerCase().indexOf('logout') !== -1 || html.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1) {
                          var f = document.getElementById('mForm');
                          if (f) { f.submit(); return 'mForm'; }
                          var f2 = document.querySelector('form[name="logout"]');
@@ -680,7 +680,7 @@ class TestService : Service(), KoinComponent {
                          for (var i = 0; i < links.length; i++) {
                              var text = (links[i].textContent || '').toLowerCase();
                              var val = (links[i].value || '').toLowerCase();
-                             if (text.indexOf('تسجيل الخروج') !== -1 || val.indexOf('تسجيل الخروج') !== -1 || text.indexOf('logout') !== -1 || val.indexOf('logout') !== -1) {
+                             if (text.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1 || val.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1 || text.indexOf('logout') !== -1 || val.indexOf('logout') !== -1) {
                                  links[i].click();
                                  return 'clicked_logout';
                              }
@@ -696,7 +696,7 @@ class TestService : Service(), KoinComponent {
                     for (var i = 0; i < links2.length; i++) {
                         var text = links2[i].textContent || '';
                         var val = links2[i].value || '';
-                        if (text.indexOf('تسجيل الدخول') !== -1 || val.indexOf('تسجيل الدخول') !== -1 || text.toLowerCase().indexOf('login') !== -1) {
+                        if (text.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644') !== -1 || val.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644') !== -1 || text.toLowerCase().indexOf('login') !== -1) {
                             links2[i].click();
                             return 'clicked_login_redirect';
                         }

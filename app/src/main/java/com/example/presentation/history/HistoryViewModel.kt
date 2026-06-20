@@ -70,8 +70,8 @@ class HistoryViewModel(
             val dir = context.getExternalFilesDir("exports") ?: context.filesDir
             val result = exportResultsUseCase(dir, fileName)
             val message = when (result) {
-                is ExportResultsUseCase.Result.Success -> "تم تصدير النتائج بنجاح إلى: ${result.path}"
-                is ExportResultsUseCase.Result.Error -> "فشل عملية التصدير: ${result.message}"
+                is ExportResultsUseCase.Result.Success -> "\u062A\u0645 \u062A\u0635\u062F\u064A\u0631 \u0627\u0644\u0646\u062A\u0627\u0626\u062C \u0628\u0646\u062C\u0627\u062D \u0625\u0644\u0649: ${result.path}"
+                is ExportResultsUseCase.Result.Error -> "\u0641\u0634\u0644 \u0639\u0645\u0644\u064A\u0629 \u0627\u0644\u062A\u0635\u062F\u064A\u0631: ${result.message}"
             }
             _exportStatus.emit(message)
         }

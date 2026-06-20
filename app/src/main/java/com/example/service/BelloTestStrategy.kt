@@ -60,8 +60,8 @@ object BelloTestStrategy {
                 (function() {
                     var html = document.documentElement.innerHTML;
                     var bodyText = document.body.innerText || '';
-                    if (bodyText.indexOf('تفاصيل الأستخدام') !== -1 || bodyText.indexOf('الوقت المتبقي') !== -1 || bodyText.indexOf('الرصيد المتبقي') !== -1) return 'logged_in';
-                    if (html.indexOf('تسجيل الخروج') !== -1 || bodyText.indexOf('تسجيل الخروج') !== -1) return 'logged_in';
+                    if (bodyText.indexOf('\u062A\u0641\u0627\u0635\u064A\u0644 \u0627\u0644\u0623\u0633\u062A\u062E\u062F\u0627\u0645') !== -1 || bodyText.indexOf('\u0627\u0644\u0648\u0642\u062A \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1) return 'logged_in';
+                    if (html.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1 || bodyText.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1) return 'logged_in';
                     return 'login_page';
                 })();
                 """.trimIndent()
@@ -79,7 +79,7 @@ object BelloTestStrategy {
                             if (f) { f.submit(); return 'mForm'; }
                             var f2 = document.querySelector('form[name="logout"]');
                             if (f2) { f2.submit(); return 'logout_form'; }
-                            var logoutBtn = document.querySelector('form[name="logout"] button[type="submit"]') || document.querySelector('a[href*="logout"], button[onclick*="logout"], input[value*="تسجيل الخروج"], button[value*="تسجيل الخروج"]');
+                            var logoutBtn = document.querySelector('form[name="logout"] button[type="submit"]') || document.querySelector('a[href*="logout"], button[onclick*="logout"], input[value*="\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C"], button[value*="\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C"]');
                             if (logoutBtn) { logoutBtn.click(); return 'clicked'; }
                             if (typeof openLogout === 'function') { openLogout(); return 'openLogout'; }
                         })();
@@ -167,12 +167,12 @@ object BelloTestStrategy {
                 (function() {
                     var html = document.documentElement.innerHTML.toLowerCase();
                     var bodyText = (document.body.innerText || '').toLowerCase();
-                    if (bodyText.indexOf('تفاصيل الأستخدام') !== -1 || bodyText.indexOf('الوقت المتبقي') !== -1 || bodyText.indexOf('الرصيد المتبقي') !== -1) return 'success';
-                    if (html.indexOf('تسجيل الخروج') !== -1 || bodyText.indexOf('تسجيل الخروج') !== -1 || bodyText.indexOf('logout') !== -1) return 'success';
+                    if (bodyText.indexOf('\u062A\u0641\u0627\u0635\u064A\u0644 \u0627\u0644\u0623\u0633\u062A\u062E\u062F\u0627\u0645') !== -1 || bodyText.indexOf('\u0627\u0644\u0648\u0642\u062A \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1) return 'success';
+                    if (html.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1 || bodyText.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1 || bodyText.indexOf('logout') !== -1) return 'success';
                     if (document.querySelector('form[action*="logout"]') || document.querySelector('a[href*="logout"]') || document.querySelector('.info.blue')) return 'success';
                     
                     if (bodyText.indexOf('already authorizing') !== -1 || html.indexOf('already authorizing') !== -1) return 'authorizing';
-                    if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('incomplete') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';
+                    if (bodyText.indexOf('\u062E\u0637\u0623') !== -1 || bodyText.indexOf('\u0641\u0634\u0644') !== -1 || bodyText.indexOf('\u063A\u064A\u0631 \u0635\u062D\u064A\u062D') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('incomplete') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';
                     
                     return 'unknown';
                 })();
@@ -214,7 +214,7 @@ object BelloTestStrategy {
                     val logoutJs = """
                     (function() {
                         if (typeof openLogout === 'function') { openLogout(); return 'logout_called'; }
-                        var logoutBtn = document.querySelector('form[name="logout"] button[type="submit"]') || document.querySelector('a[href*="logout"], button[onclick*="logout"], input[value*="تسجيل الخروج"], button[value*="تسجيل الخروج"]');
+                        var logoutBtn = document.querySelector('form[name="logout"] button[type="submit"]') || document.querySelector('a[href*="logout"], button[onclick*="logout"], input[value*="\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C"], button[value*="\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C"]');
                         if (logoutBtn) { 
                             logoutBtn.click();
                             return 'logout_clicked';

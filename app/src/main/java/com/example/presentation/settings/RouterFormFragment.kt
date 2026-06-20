@@ -78,7 +78,7 @@ class RouterFormFragment : Fragment() {
         btnCancel = view.findViewById(R.id.btn_cancel_form)
         btnSave = view.findViewById(R.id.btn_save_form)
 
-        toolbar.title = if (targetRouterId == -1L) "إضافة راوتر مستهدف جديد" else "تعديل بيانات الراوتر"
+        toolbar.title = if (targetRouterId == -1L) "\u0625\u0636\u0627\u0641\u0629 \u0631\u0627\u0648\u062A\u0631 \u0645\u0633\u062A\u0647\u062F\u0641 \u062C\u062F\u064A\u062F" else "\u062A\u0639\u062F\u064A\u0644 \u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0631\u0627\u0648\u062A\u0631"
     }
 
     private fun setupProtocolSpinner() {
@@ -149,7 +149,7 @@ class RouterFormFragment : Fragment() {
         val logoutSel = etLogoutSel.text?.toString()?.trim() ?: ""
 
         if (name.isBlank() || ip.isBlank() || userSel.isBlank() || pwdSel.isBlank() || subSel.isBlank()) {
-            com.example.util.ToastHelper.showErrorToast(requireContext(), "الرجاء تعبئة كافة الحقول المطلوبة بنجاح")
+            com.example.util.ToastHelper.showErrorToast(requireContext(), "\u0627\u0644\u0631\u062C\u0627\u0621 \u062A\u0639\u0628\u0626\u0629 \u0643\u0627\u0641\u0629 \u0627\u0644\u062D\u0642\u0648\u0644 \u0627\u0644\u0645\u0637\u0644\u0648\u0628\u0629 \u0628\u0646\u062C\u0627\u062D")
             return
         }
 
@@ -176,7 +176,7 @@ class RouterFormFragment : Fragment() {
             viewModel.updateRouter(item)
         }
 
-        com.example.util.ToastHelper.showSuccessToast(requireContext(), "تم حفظ ملف تعريف الراوتر بنجاح")
+        com.example.util.ToastHelper.showSuccessToast(requireContext(), "\u062A\u0645 \u062D\u0641\u0638 \u0645\u0644\u0641 \u062A\u0639\u0631\u064A\u0641 \u0627\u0644\u0631\u0627\u0648\u062A\u0631 \u0628\u0646\u062C\u0627\u062D")
         findNavController().popBackStack()
     }
 }

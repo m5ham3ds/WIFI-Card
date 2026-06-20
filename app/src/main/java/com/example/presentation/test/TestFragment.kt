@@ -74,10 +74,10 @@ class TestFragment : Fragment() {
         btnCancel.setOnClickListener {
             com.example.util.DialogHelper.showCustomDialog(
                 context = requireContext(),
-                title = "إلغاء الاختبار",
-                message = "هل أنت متأكد من رغبتك في إلغاء عملية فحص وتحليل البطاقات الجارية؟",
+                title = "\u0625\u0644\u063A\u0627\u0621 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631",
+                message = "\u0647\u0644 \u0623\u0646\u062A \u0645\u062A\u0623\u0643\u062F \u0645\u0646 \u0631\u063A\u0628\u062A\u0643 \u0641\u064A \u0625\u0644\u063A\u0627\u0621 \u0639\u0645\u0644\u064A\u0629 \u0641\u062D\u0635 \u0648\u062A\u062D\u0644\u064A\u0644 \u0627\u0644\u0628\u0637\u0627\u0642\u0627\u062A \u0627\u0644\u062C\u0627\u0631\u064A\u0629\u061F",
                 dialogType = com.example.util.DialogHelper.DialogType.WARNING,
-                positiveButtonText = "نعم، إلغاء",
+                positiveButtonText = "\u0646\u0639\u0645\u060C \u0625\u0644\u063A\u0627\u0621",
                 positiveAction = {
                     val serviceIntent = Intent(requireContext(), TestService::class.java).apply {
                         action = TestService.ACTION_CANCEL
@@ -85,7 +85,7 @@ class TestFragment : Fragment() {
                     requireContext().startService(serviceIntent)
                     findNavController().popBackStack()
                 },
-                negativeButtonText = "لا، استمرار"
+                negativeButtonText = "\u0644\u0627\u060C \u0627\u0633\u062A\u0645\u0631\u0627\u0631"
             )
         }
     }
@@ -103,15 +103,15 @@ class TestFragment : Fragment() {
                     }.collectLatest { (state, isRunning) ->
                         // Status text
                         val statusText = when (state.status) {
-                            "RUNNING" -> "حالة الاختبار: جاري الفحص النشط..."
-                            "PAUSED" -> "حالة الاختبار: موقوف مؤقتاً"
-                            "DONE" -> "حالة الاختبار: تم إكمال الفحص كلياً"
-                            "LOAD_ERROR" -> "حالة الاختبار: فشل في تحميل الصفحة"
-                            "CANCELLED" -> "حالة الاختبار: تم الإلغاء"
-                            else -> "حالة الاختبار: تهيأة البيئة..."
+                            "RUNNING" -> "\u062D\u0627\u0644\u0629 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631: \u062C\u0627\u0631\u064A \u0627\u0644\u0641\u062D\u0635 \u0627\u0644\u0646\u0634\u0637..."
+                            "PAUSED" -> "\u062D\u0627\u0644\u0629 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631: \u0645\u0648\u0642\u0648\u0641 \u0645\u0624\u0642\u062A\u0627\u064B"
+                            "DONE" -> "\u062D\u0627\u0644\u0629 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631: \u062A\u0645 \u0625\u0643\u0645\u0627\u0644 \u0627\u0644\u0641\u062D\u0635 \u0643\u0644\u064A\u0627\u064B"
+                            "LOAD_ERROR" -> "\u062D\u0627\u0644\u0629 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631: \u0641\u0634\u0644 \u0641\u064A \u062A\u062D\u0645\u064A\u0644 \u0627\u0644\u0635\u0641\u062D\u0629"
+                            "CANCELLED" -> "\u062D\u0627\u0644\u0629 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631: \u062A\u0645 \u0627\u0644\u0625\u0644\u063A\u0627\u0621"
+                            else -> "\u062D\u0627\u0644\u0629 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631: \u062A\u0647\u064A\u0623\u0629 \u0627\u0644\u0628\u064A\u0626\u0629..."
                         }
                         tvTestStatus.text = statusText
-                        tvActiveCard.text = "البطاقة الحالية للفحص: ${state.currentCard} (${state.progress}/${state.total})"
+                        tvActiveCard.text = "\u0627\u0644\u0628\u0637\u0627\u0642\u0629 \u0627\u0644\u062D\u0627\u0644\u064A\u0629 \u0644\u0644\u0641\u062D\u0635: ${state.currentCard} (${state.progress}/${state.total})"
 
                         // Progress Indicator
                         if (state.total > 0) {
@@ -122,7 +122,7 @@ class TestFragment : Fragment() {
                         }
 
                          // Pause Button Label
-                        btnPause.text = if (state.isPaused) "استئناف" else "إيقاف مؤقت"
+                        btnPause.text = if (state.isPaused) "\u0627\u0633\u062A\u0626\u0646\u0627\u0641" else "\u0625\u064A\u0642\u0627\u0641 \u0645\u0624\u0642\u062A"
 
                         val isProcessActive = isRunning && (state.status == "RUNNING" || state.status == "PAUSED" || state.status == "LOAD_ERROR")
                         btnPause.isEnabled = isProcessActive
@@ -154,7 +154,7 @@ class TestFragment : Fragment() {
                             val ctx = context
                             if (ctx != null && isAdded) {
                                 try {
-                                    com.example.util.ToastHelper.showSuccessToast(ctx, "اكتمل الاختبار الجاري بنجاح!")
+                                    com.example.util.ToastHelper.showSuccessToast(ctx, "\u0627\u0643\u062A\u0645\u0644 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631 \u0627\u0644\u062C\u0627\u0631\u064A \u0628\u0646\u062C\u0627\u062D!")
                                     findNavController().popBackStack()
                                 } catch (e: Exception) {
                                     Timber.e(e, "Failed to pop backstack in TestFragment")
@@ -163,7 +163,7 @@ class TestFragment : Fragment() {
                         }
 
                         if (state.status == "LOAD_ERROR") {
-                            showLoadErrorDialog(state.error ?: "فشل تحميل الصفحة")
+                            showLoadErrorDialog(state.error ?: "\u0641\u0634\u0644 \u062A\u062D\u0645\u064A\u0644 \u0627\u0644\u0635\u0641\u062D\u0629")
                         } else {
                             activeErrorDialog?.dismiss()
                             activeErrorDialog = null
@@ -189,10 +189,10 @@ class TestFragment : Fragment() {
 
         activeErrorDialog = com.example.util.DialogHelper.showCustomDialog(
             context = ctx,
-            title = "فشل تحميل الصفحة",
-            message = "لم نتمكن من الوصول لصفحة تسجيل الدخول للراوتر.\nيرجى التأكد من أنك متصل بشبكة الواي فاي للراوتر وقريب منه، ثم أعد المحاولة.\n\nالخطأ: $errorMessage",
+            title = "\u0641\u0634\u0644 \u062A\u062D\u0645\u064A\u0644 \u0627\u0644\u0635\u0641\u062D\u0629",
+            message = "\u0644\u0645 \u0646\u062A\u0645\u0643\u0646 \u0645\u0646 \u0627\u0644\u0648\u0635\u0648\u0644 \u0644\u0635\u0641\u062D\u0629 \u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644 \u0644\u0644\u0631\u0627\u0648\u062A\u0631.\n\u064A\u0631\u062C\u0649 \u0627\u0644\u062A\u0623\u0643\u062F \u0645\u0646 \u0623\u0646\u0643 \u0645\u062A\u0635\u0644 \u0628\u0634\u0628\u0643\u0629 \u0627\u0644\u0648\u0627\u064A \u0641\u0627\u064A \u0644\u0644\u0631\u0627\u0648\u062A\u0631 \u0648\u0642\u0631\u064A\u0628 \u0645\u0646\u0647\u060C \u062B\u0645 \u0623\u0639\u062F \u0627\u0644\u0645\u062D\u0627\u0648\u0644\u0629.\n\n\u0627\u0644\u062E\u0637\u0623: $errorMessage",
             dialogType = com.example.util.DialogHelper.DialogType.WARNING,
-            positiveButtonText = "إعادة المحاولة",
+            positiveButtonText = "\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0645\u062D\u0627\u0648\u0644\u0629",
             positiveAction = {
                 val serviceIntent = Intent(requireContext(), TestService::class.java).apply {
                     action = TestService.ACTION_RETRY_LOAD
@@ -200,7 +200,7 @@ class TestFragment : Fragment() {
                 requireContext().startService(serviceIntent)
                 activeErrorDialog = null
             },
-            negativeButtonText = "إلغاء والعودة",
+            negativeButtonText = "\u0625\u0644\u063A\u0627\u0621 \u0648\u0627\u0644\u0639\u0648\u062F\u0629",
             negativeAction = {
                 val serviceIntent = Intent(requireContext(), TestService::class.java).apply {
                     action = TestService.ACTION_CANCEL

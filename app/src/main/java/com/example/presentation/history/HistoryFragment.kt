@@ -131,7 +131,7 @@ class HistoryFragment : Fragment() {
                 launch {
                     viewModel.exportStatus.collect { message ->
                         val ctx = context ?: return@collect
-                        if (message.contains("نجاح") || message.contains("تم")) {
+                        if (message.contains("\u0646\u062C\u0627\u062D") || message.contains("\u062A\u0645")) {
                             com.example.util.ToastHelper.showSuccessToast(ctx, message)
                         } else {
                             com.example.util.ToastHelper.showErrorToast(ctx, message)
