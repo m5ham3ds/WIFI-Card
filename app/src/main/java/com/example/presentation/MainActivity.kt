@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
         val inflater = navController.navInflater
-        val graph = inflater.inflate(R.id.nav_graph)
+        val graph = inflater.inflate(R.navigation.nav_graph)
         
         if (isUnlocked) {
             graph.setStartDestination(R.id.nav_home_fragment)
