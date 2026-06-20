@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:hint="اسم الملف (مثال: مستخدم راوتر 1)">
+            android:hint="@string/dialog_router_hint_file">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_router_name"
                 android:layout_width="match_parent"
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:hint="عنوان IP أو المضيف (IP / Hostname)">
+            android:hint="@string/dialog_router_hint_ip">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_ip"
                 android:layout_width="match_parent"
@@ -64,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:hint="مسار صفحة تسجيل الدخول">
+            android:hint="@string/dialog_router_hint_path">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_login_path"
                 android:layout_width="match_parent"
@@ -78,7 +78,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:hint="معرف حقل اسم المستخدم (CSS Selector)">
+            android:hint="@string/dialog_router_hint_user_css">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_username_selector"
                 android:layout_width="match_parent"
@@ -91,7 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:hint="معرف حقل كود البطاقة (CSS Selector)">
+            android:hint="@string/dialog_router_hint_pass_css">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_password_selector"
                 android:layout_width="match_parent"
@@ -104,7 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:hint="معرف زر الإرسال / انتر">
+            android:hint="@string/dialog_router_hint_submit">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_submit_selector"
                 android:layout_width="match_parent"
@@ -118,7 +118,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:hint="اسم المستخدم الافتراضي">
+            android:hint="@string/dialog_router_hint_default_user">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_username"
                 android:layout_width="match_parent"
@@ -131,7 +131,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:hint="مؤشر النجاح (كلمة بالصفحة)">
+            android:hint="@string/dialog_router_hint_success">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_success_indicator"
                 android:layout_width="match_parent"
@@ -144,7 +144,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="مؤشر الفشل (كلمة بالصفحة)">
+            android:hint="@string/dialog_router_hint_failure">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_failure_indicator"
                 android:layout_width="match_parent"
@@ -157,7 +157,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="معرف زر تسجيل الخروج (اختياري)">
+            android:hint="@string/dialog_router_hint_logout">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_logout_selector"
                 android:layout_width="match_parent"

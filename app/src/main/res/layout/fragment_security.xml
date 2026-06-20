@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:background="#0A0015"
     android:padding="16dp"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:layoutDirection="rtl">
 
     <ImageView

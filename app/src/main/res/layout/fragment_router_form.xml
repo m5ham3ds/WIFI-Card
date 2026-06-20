@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        app:title="إضافة ملف تعريف جديد"
+        app:title="@string/frag_router_title"
         app:titleTextColor="?attr/colorOnPrimary"
         app:navigationIcon="@drawable/ic_back"
         app:navigationIconTint="?attr/colorOnPrimary" />
@@ -63,7 +63,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="بيانات الاتصال الأساسية"
+                            android:text="@string/frag_router_conn_data"
                             android:textAppearance="?attr/textAppearanceTitleMedium"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -74,7 +74,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:hint="اسم ملف التعريف (مثال: راوتر الدور الأول)">
+                        android:hint="@string/dialog_router_hint_file">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_router_name"
                             android:layout_width="match_parent"
@@ -92,7 +92,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="بروتوكول الويب:"
+                            android:text="@string/frag_router_proto"
                             android:textAppearance="?attr/textAppearanceLabelMedium"
                             android:layout_marginBottom="4dp" />
 
@@ -109,7 +109,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:hint="عنوان IP أو المضيف (IP / Hostname)">
+                        android:hint="@string/dialog_router_hint_ip">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_ip"
                             android:layout_width="match_parent"
@@ -123,7 +123,7 @@
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="مسار صفحة تسجيل الدخول">
+                        android:hint="@string/dialog_router_hint_path">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_login_path"
                             android:layout_width="match_parent"
@@ -168,7 +168,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="محددات عناصر الصفحة CSS Selectors"
+                            android:text="@string/frag_router_css_title"
                             android:textAppearance="?attr/textAppearanceTitleMedium"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -179,7 +179,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:hint="معرف حقل اسم المستخدم">
+                        android:hint="@string/dialog_router_hint_user_css">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_username_selector"
                             android:layout_width="match_parent"
@@ -194,7 +194,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:hint="معرف حقل كود البطاقة">
+                        android:hint="@string/dialog_router_hint_pass_css">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_password_selector"
                             android:layout_width="match_parent"
@@ -209,7 +209,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:hint="معرف زر الإرسال / انتر">
+                        android:hint="@string/dialog_router_hint_submit">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_submit_selector"
                             android:layout_width="match_parent"
@@ -223,7 +223,7 @@
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="معرف زر تسجيل الخروج (اختياري)">
+                        android:hint="@string/dialog_router_hint_logout">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_logout_selector"
                             android:layout_width="match_parent"
@@ -267,7 +267,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="مؤشرات الاتصال والتحقق"
+                            android:text="@string/frag_router_indicators"
                             android:textAppearance="?attr/textAppearanceTitleMedium"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -278,7 +278,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:hint="اسم المستخدم الافتراضي لقالب الدخول">
+                        android:hint="@string/dialog_router_hint_default_user">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_username"
                             android:layout_width="match_parent"
@@ -292,7 +292,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:hint="مؤشر نجاح الاتصال (كلمة دليلة)">
+                        android:hint="@string/dialog_router_hint_success">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_success_indicator"
                             android:layout_width="match_parent"
@@ -306,7 +306,7 @@
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="مؤشر فشل الاتصال (كلمة دليلة)">
+                        android:hint="@string/dialog_router_hint_failure">
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_failure_indicator"
                             android:layout_width="match_parent"

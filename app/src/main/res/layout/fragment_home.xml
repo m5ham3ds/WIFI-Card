@@ -57,7 +57,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_marginStart="8dp"
-                        android:contentDescription="إدارة أجهزة الراوتر"
+                        android:contentDescription="@string/home_manage_routers"
                         app:icon="@drawable/ic_router" />
                 </LinearLayout>
 
@@ -102,7 +102,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginEnd="8dp"
-                        android:hint="البادئة (Prefix)">
+                        android:hint="@string/home_hint_prefix">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_prefix"
@@ -116,7 +116,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:hint="الطول (Length)">
+                        android:hint="@string/home_hint_length">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_length"
@@ -132,7 +132,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="مجموعة الأحرف (Charset)">
+                    android:hint="@string/home_hint_charset">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_charset"
@@ -145,7 +145,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="عدد البطاقات المطلوب توليدها">
+                    android:hint="@string/home_hint_count">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_count"

@@ -133,4 +133,24 @@
     <string name="test_status_init">Test Status: Initializing...</string>
     <string name="test_live_stream">Live Stream from Isolated Browser:</string>
     <string name="test_cancel_log">Cancel and Disconnect</string>
+    <string name="dialog_router_hint_file">Profile Name (e.g., Floor 1 Router)</string>
+    <string name="dialog_router_hint_ip">IP Address or Hostname</string>
+    <string name="dialog_router_hint_path">Login Page Path</string>
+    <string name="dialog_router_hint_user_css">Username Field ID (CSS Selector)</string>
+    <string name="dialog_router_hint_pass_css">Password Field ID (CSS Selector)</string>
+    <string name="dialog_router_hint_submit">Submit Button ID</string>
+    <string name="dialog_router_hint_default_user">Default Username</string>
+    <string name="dialog_router_hint_success">Success Indicator (Word on page)</string>
+    <string name="dialog_router_hint_failure">Failure Indicator (Word on page)</string>
+    <string name="dialog_router_hint_logout">Logout Button ID (Optional)</string>
+    <string name="frag_router_title">Add New Profile</string>
+    <string name="frag_router_conn_data">Basic Connection Data</string>
+    <string name="frag_router_proto">Web Protocol:</string>
+    <string name="frag_router_css_title">Page Elements CSS Selectors</string>
+    <string name="frag_router_indicators">Connection and Validation Indicators</string>
+    <string name="home_manage_routers">Manage Routers</string>
+    <string name="home_hint_prefix">Prefix</string>
+    <string name="home_hint_length">Length</string>
+    <string name="home_hint_charset">Charset</string>
+    <string name="home_hint_count">Cards to Generate</string>
 </resources>

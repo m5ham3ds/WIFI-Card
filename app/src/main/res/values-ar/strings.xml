@@ -133,4 +133,24 @@
     <string name="test_status_init">حالة الاختبار: جاري التهيأة...</string>
     <string name="test_live_stream">بث حي ومباشر من المتصفح المعزول:</string>
     <string name="test_cancel_log">إلغاء وفصل</string>
+    <string name="dialog_router_hint_file">اسم الملف (مثال: مستخدم راوتر 1)</string>
+    <string name="dialog_router_hint_ip">عنوان IP أو المضيف (IP / Hostname)</string>
+    <string name="dialog_router_hint_path">مسار صفحة تسجيل الدخول</string>
+    <string name="dialog_router_hint_user_css">معرف حقل اسم المستخدم (CSS Selector)</string>
+    <string name="dialog_router_hint_pass_css">معرف حقل كود البطاقة (CSS Selector)</string>
+    <string name="dialog_router_hint_submit">معرف زر الإرسال / انتر</string>
+    <string name="dialog_router_hint_default_user">اسم المستخدم الافتراضي</string>
+    <string name="dialog_router_hint_success">مؤشر النجاح (كلمة بالصفحة)</string>
+    <string name="dialog_router_hint_failure">مؤشر الفشل (كلمة بالصفحة)</string>
+    <string name="dialog_router_hint_logout">معرف زر تسجيل الخروج (اختياري)</string>
+    <string name="frag_router_title">إضافة ملف تعريف جديد</string>
+    <string name="frag_router_conn_data">بيانات الاتصال الأساسية</string>
+    <string name="frag_router_proto">بروتوكول الويب:</string>
+    <string name="frag_router_css_title">محددات عناصر الصفحة CSS Selectors</string>
+    <string name="frag_router_indicators">مؤشرات الاتصال والتحقق</string>
+    <string name="home_manage_routers">إدارة أجهزة الراوتر</string>
+    <string name="home_hint_prefix">البادئة (Prefix)</string>
+    <string name="home_hint_length">الطول (Length)</string>
+    <string name="home_hint_charset">مجموعة الأحرف (Charset)</string>
+    <string name="home_hint_count">عدد البطاقات المطلوب توليدها</string>
 </resources>
