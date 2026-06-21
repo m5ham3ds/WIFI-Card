@@ -58,18 +58,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 title = getString(R.string.pref_clear_history),
                 message = getString(R.string.msg_confirm_clear),
                 dialogType = com.example.util.DialogHelper.DialogType.WARNING,
-                positiveButtonText = "\u0646\u0639\u0645\u060C \u0627\u062D\u0630\u0641 \u0627\u0644\u0643\u0644",
+                positiveButtonText = "نعم، احذف الكل",
                 positiveAction = {
                     viewModel.confirmClearHistory()
                 },
-                negativeButtonText = "\u0625\u0644\u063A\u0627\u0621"
+                negativeButtonText = "إلغاء"
             )
             true
         }
 
         // 3. Export DB click
         findPreference<Preference>("export_db")?.setOnPreferenceClickListener {
-            com.example.util.ToastHelper.showInfoToast(requireContext(), "\u0627\u0644\u0631\u062C\u0627\u0621 \u0627\u0644\u0630\u0647\u0627\u0628 \u0625\u0644\u0649 \u0627\u0644\u0633\u062C\u0644 \u0648\u062A\u062D\u062F\u064A\u062F \u062C\u0644\u0633\u0629 \u0645\u0639\u064A\u0646\u0629 \u0644\u062A\u0635\u062F\u064A\u0631 \u0646\u062A\u0627\u0626\u062C\u0647\u0627 \u0628\u0634\u0643\u0644 \u0645\u062E\u0635\u0635 \u0648\u0633\u0631\u064A\u0639")
+            com.example.util.ToastHelper.showInfoToast(requireContext(), "الرجاء الذهاب إلى السجل وتحديد جلسة معينة لتصدير نتائجها بشكل مخصص وسريع")
             true
         }
 

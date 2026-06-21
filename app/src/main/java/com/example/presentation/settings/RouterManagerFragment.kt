@@ -90,12 +90,12 @@ class RouterManagerFragment : Fragment() {
     private fun confirmDeleteRouter(router: RouterProfileEntity) {
         com.example.util.DialogHelper.showCustomDialog(
             context = requireContext(),
-            title = "\u062D\u0630\u0641 \u0645\u0644\u0641 \u0627\u0644\u062A\u0639\u0631\u064A\u0641",
-            message = "\u0647\u0644 \u0623\u0646\u062A \u0645\u062A\u0623\u0643\u062F \u0645\u0646 \u0631\u063A\u0628\u062A\u0643 \u0641\u064A \u062D\u0630\u0641 \u0645\u0644\u0641 '${router.name}'\u061F",
+            title = "حذف ملف التعريف",
+            message = "هل أنت متأكد من رغبتك في حذف ملف '${router.name}'؟",
             dialogType = com.example.util.DialogHelper.DialogType.WARNING,
-            positiveButtonText = "\u062D\u0630\u0641",
+            positiveButtonText = "حذف",
             positiveAction = { viewModel.deleteRouter(router) },
-            negativeButtonText = "\u0625\u0644\u063A\u0627\u0621"
+            negativeButtonText = "إلغاء"
         )
     }
 }

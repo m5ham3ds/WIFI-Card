@@ -108,7 +108,7 @@ object InjectionManager {
                 for (var i = 0; i < links.length; i++) {
                     var text = (links[i].textContent || '').toLowerCase();
                     var value = (links[i].value || '').toLowerCase();
-                    if (text.indexOf('logout') !== -1 || text.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1 || text.indexOf('\u062E\u0631\u0648\u062C') !== -1 || value.indexOf('logout') !== -1 || value.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1) {
+                    if (text.indexOf('logout') !== -1 || text.indexOf('تسجيل الخروج') !== -1 || text.indexOf('خروج') !== -1 || value.indexOf('logout') !== -1 || value.indexOf('تسجيل الخروج') !== -1) {
                         links[i].click();
                         return 'clicked_fallback';
                     }
@@ -135,7 +135,7 @@ object InjectionManager {
                 if (bodyText.indexOf('already authorizing') !== -1 || html.indexOf('already authorizing') !== -1) {
                     return 'authorizing';
                 }
-                if (bodyText.indexOf('\u062E\u0637\u0623') !== -1 || bodyText.indexOf('\u0641\u0634\u0644') !== -1 || bodyText.indexOf('\u0644\u0627 \u064A\u0645\u0643\u0646') !== -1 || bodyText.indexOf('\u063A\u064A\u0631 \u0635\u062D\u064A\u062D') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('incorrect') !== -1) {
+                if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('لا يمكن') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('incorrect') !== -1) {
                     // Make sure it's not a generic word in the page footer, but a common Mikrotik error is enough.
                     return 'failure';
                 }
@@ -146,12 +146,17 @@ object InjectionManager {
                 }
                 
                 // Fallback strict success checks
-                if (bodyText.indexOf('\u0627\u0644\u0648\u0642\u062A \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0645\u064A\u063A\u0628\u0627\u064A\u062A') !== -1 || bodyText.indexOf('\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1) {
+                var htmlLower = html.toLowerCase();
+                var textLower = bodyText.toLowerCase();
+                var hasLogout = (htmlLower.indexOf('logout') !== -1 || htmlLower.indexOf('تسجيل الخروج') !== -1 || htmlLower.indexOf('خروج') !== -1);
+                var hasSuccessText = (textLower.indexOf('الوقت المتبقي') !== -1 || textLower.indexOf('الميغبايت') !== -1 || textLower.indexOf('الرصيد المتبقي') !== -1 || textLower.indexOf('المتبقي') !== -1);
+                
+                if (hasLogout && hasSuccessText) {
                     return 'success';
                 }
                 
                 // 3. Intermediate logic check (Redirect page)
-                if (html.indexOf('\u0633\u064A\u062A\u0645 \u0627\u0644\u0622\u0646 \u062A\u062D\u0648\u064A\u0644\u0643') !== -1 || html.indexOf('redirect') !== -1 || html.indexOf('Please wait') !== -1) {
+                if (html.indexOf('سيتم الآن تحويلك') !== -1 || html.indexOf('redirect') !== -1 || html.indexOf('Please wait') !== -1) {
                     return 'redirecting';
                 }
                 

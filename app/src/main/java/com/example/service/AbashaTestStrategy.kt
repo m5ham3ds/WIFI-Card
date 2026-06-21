@@ -61,8 +61,8 @@ object AbashaTestStrategy {
                     var html = document.documentElement.innerHTML;
                     var bodyText = document.body.innerText || '';
                     if (html.indexOf('MikroTicket Status') !== -1) return 'logged_in';
-                    if (bodyText.indexOf('\u0639\u0646\u0648\u0627\u0646 IP') !== -1 || bodyText.indexOf('\u062A\u0646\u0632\u064A\u0644') !== -1 || bodyText.indexOf('\u0648\u0642\u062A \u0627\u0644\u0627\u062A\u0635\u0627\u0644') !== -1) return 'logged_in';
-                    if (html.indexOf('openLogout()') !== -1 && html.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644') === -1) return 'logged_in';
+                    if (bodyText.indexOf('عنوان IP') !== -1 || bodyText.indexOf('تنزيل') !== -1 || bodyText.indexOf('وقت الاتصال') !== -1) return 'logged_in';
+                    if (html.indexOf('openLogout()') !== -1 && html.indexOf('تسجيل الدخول') === -1) return 'logged_in';
                     return 'login_page';
                 })();
                 """.trimIndent()
@@ -80,7 +80,7 @@ object AbashaTestStrategy {
                             if (f) { f.submit(); return 'mForm'; }
                             var f2 = document.querySelector('form[name="logout"]');
                             if (f2) { f2.submit(); return 'logout_form'; }
-                            var logoutBtn = document.querySelector('form[name="logout"] button') || document.querySelector('a[href*="logout"], button[onclick*="logout"], input[value*="Logout"], input[value*="\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C"], button[value*="\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C"]');
+                            var logoutBtn = document.querySelector('form[name="logout"] button') || document.querySelector('a[href*="logout"], button[onclick*="logout"], input[value*="Logout"], input[value*="تسجيل الخروج"], button[value*="تسجيل الخروج"]');
                             if (logoutBtn) { logoutBtn.click(); return 'clicked'; }
                             if (typeof openLogout === 'function') { openLogout(); return 'openLogout'; }
                         })();
@@ -142,7 +142,7 @@ object AbashaTestStrategy {
                             } catch (err) {}
                         }
                         
-                        var submitBtn = document.querySelector('form[name="login"] input[type="submit"], form[name="login"] button[type="submit"], input[value="\u0627\u062A\u0635\u0627\u0644"], .button-submit');
+                        var submitBtn = document.querySelector('form[name="login"] input[type="submit"], form[name="login"] button[type="submit"], input[value="اتصال"], .button-submit');
                         if (submitBtn) {
                             submitBtn.click();
                             return 'injected_click';
@@ -169,10 +169,13 @@ object AbashaTestStrategy {
                     var html = document.documentElement.innerHTML.toLowerCase();
                     var bodyText = (document.body.innerText || '').toLowerCase();
                     
-                    if (bodyText.indexOf('\u0627\u0644\u0648\u0642\u062A \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0645\u064A\u063A\u0628\u0627\u064A\u062A') !== -1 || bodyText.indexOf('\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1) return 'success';
+                    var hasLogout = (html.indexOf('logout') !== -1 || html.indexOf('تسجيل الخروج') !== -1 || html.indexOf('خروج') !== -1);
+                    var hasSuccessText = (bodyText.indexOf('الوقت المتبقي') !== -1 || bodyText.indexOf('الميغبايت') !== -1 || bodyText.indexOf('الرصيد المتبقي') !== -1 || bodyText.indexOf('المتبقي') !== -1);
+                    
+                    if (hasLogout && hasSuccessText) return 'success';
                     
                     if (bodyText.indexOf('already authorizing') !== -1 || html.indexOf('already authorizing') !== -1) return 'authorizing';
-                    if (bodyText.indexOf('\u062E\u0637\u0623') !== -1 || bodyText.indexOf('\u0641\u0634\u0644') !== -1 || bodyText.indexOf('\u063A\u064A\u0631 \u0635\u062D\u064A\u062D') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';
+                    if (bodyText.indexOf('خطأ') !== -1 || bodyText.indexOf('فشل') !== -1 || bodyText.indexOf('غير صحيح') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';
                     
                     return 'unknown';
                 })();

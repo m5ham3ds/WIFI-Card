@@ -218,7 +218,7 @@ class HomeViewModel(
         val routerId = _selectedRouterId.value
         if (routerId == -1L) {
             viewModelScope.launch {
-                _errorFlow.emit("\u0627\u0644\u0631\u062C\u0627\u0621 \u0627\u062E\u062A\u064A\u0627\u0631 \u0631\u0627\u0648\u062A\u0631 \u0623\u0648\u0644\u0627\u064B")
+                _errorFlow.emit("الرجاء اختيار راوتر أولاً")
             }
             return
         }
@@ -231,14 +231,14 @@ class HomeViewModel(
                 // Generate
                 val cards = generateCardsUseCase(prefix, length, count, charset)
                 if (cards.isEmpty()) {
-                    _errorFlow.emit("\u0641\u0634\u0644 \u062A\u0648\u0644\u064A\u062F \u0627\u0644\u0628\u0637\u0627\u0642\u0627\u062A")
+                    _errorFlow.emit("فشل توليد البطاقات")
                     return@launch
                 }
                 
                 val plist = ArrayList(cards.map { it.code })
                 _startTestEvent.emit(TestStartConfig(routerId, plist, delayMs))
             } catch (e: Exception) {
-                _errorFlow.emit("\u062D\u062F\u062B \u062E\u0637\u0623 \u0623\u062B\u0646\u0627\u0621 \u0627\u0644\u0628\u062F\u0621: ${e.message}")
+                _errorFlow.emit("حدث خطأ أثناء البدء: ${e.message}")
             }
         }
     }

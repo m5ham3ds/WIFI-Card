@@ -15,7 +15,7 @@ import com.example.data.local.entity.*
         TestSessionEntity::class,
         SuccessfulPatternEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
