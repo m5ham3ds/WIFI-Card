@@ -1,5 +1,6 @@
 package com.example.presentation.home
 
+// Syncing decoded Arabic strings to project files
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle

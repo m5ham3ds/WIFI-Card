@@ -1,5 +1,6 @@
 package com.example.service
 
+// Synced project files for native translation handling
 import android.app.Service
 import android.content.Context
 import android.content.Intent

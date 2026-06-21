@@ -1,5 +1,6 @@
 package com.example.presentation.home
 
+// View model decoded natively for UI sync
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network

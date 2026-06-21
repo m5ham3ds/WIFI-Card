@@ -1,5 +1,6 @@
 package com.example.presentation.settings
 
+// Synced translations natively securely without unicode strings
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
