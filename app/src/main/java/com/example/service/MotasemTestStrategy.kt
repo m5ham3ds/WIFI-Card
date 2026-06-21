@@ -210,16 +210,9 @@ object MotasemTestStrategy {
                 val checkJs = """
                 (function() {
                     var html = document.documentElement.innerHTML.toLowerCase();
-                    if ('$safeSuccess' !== '' && '$safeSuccess' !== 'null' && html.indexOf('$safeSuccess'.toLowerCase()) !== -1) return 'success';
-                    
                     var bodyText = (document.body.innerText || '').toLowerCase();
-                    if (bodyText.indexOf('\u062A\u0641\u0627\u0635\u064A\u0644 \u0627\u0644\u0623\u0633\u062A\u062E\u062F\u0627\u0645') !== -1 || bodyText.indexOf('\u0627\u0644\u0648\u0642\u062A \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1) return 'success';
                     
-                    if (document.querySelector('form[action*="logout"]') || document.querySelector('a[href*="logout"]')) return 'success';
-                    
-                    var logoutBtn = document.querySelector('a[href*="logout"], button[onclick*="logout"], input[value*="\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C"], .info.blue');
-                    if (logoutBtn) return 'success';
-                    if (html.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1 || html.indexOf('mikroticket status') !== -1) return 'success';
+                    if (bodyText.indexOf('\u0627\u0644\u0648\u0642\u062A \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0645\u064A\u063A\u0628\u0627\u064A\u062A') !== -1 || bodyText.indexOf('\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1) return 'success';
                     
                     if (bodyText.indexOf('already authorizing') !== -1 || html.indexOf('already authorizing') !== -1) return 'authorizing';
                     

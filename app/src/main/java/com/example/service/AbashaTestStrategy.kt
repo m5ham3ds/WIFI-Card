@@ -168,9 +168,8 @@ object AbashaTestStrategy {
                 (function() {
                     var html = document.documentElement.innerHTML.toLowerCase();
                     var bodyText = (document.body.innerText || '').toLowerCase();
-                    if (html.indexOf('mikroticket status') !== -1) return 'success';
-                    if (bodyText.indexOf('\u0639\u0646\u0648\u0627\u0646 ip') !== -1 || bodyText.indexOf('\u062A\u0646\u0632\u064A\u0644') !== -1 || bodyText.indexOf('\u0631\u0641\u0639') !== -1 || bodyText.indexOf('\u0648\u0642\u062A \u0627\u0644\u0627\u062A\u0635\u0627\u0644') !== -1) return 'success';
-                    if (document.querySelector('form[id="mForm"]') || document.querySelector('form[action*="logout"]')) return 'success';
+                    
+                    if (bodyText.indexOf('\u0627\u0644\u0648\u0642\u062A \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0645\u064A\u063A\u0628\u0627\u064A\u062A') !== -1 || bodyText.indexOf('\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1) return 'success';
                     
                     if (bodyText.indexOf('already authorizing') !== -1 || html.indexOf('already authorizing') !== -1) return 'authorizing';
                     if (bodyText.indexOf('\u062E\u0637\u0623') !== -1 || bodyText.indexOf('\u0641\u0634\u0644') !== -1 || bodyText.indexOf('\u063A\u064A\u0631 \u0635\u062D\u064A\u062D') !== -1 || bodyText.indexOf('invalid') !== -1 || bodyText.indexOf('not found') !== -1) return 'failure';

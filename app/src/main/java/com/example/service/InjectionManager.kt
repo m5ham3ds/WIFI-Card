@@ -140,34 +140,14 @@ object InjectionManager {
                     return 'failure';
                 }
                 
-                // 4. Missing Login button / Visible Logout button
-                var lSel = '${logoutSel.replace("'", "\\'")}';
-                var uSel = '${loginSel.replace("'", "\\'")}';
-                var logoutBtn = lSel ? document.querySelector(lSel) : null;
-                var loginBtn = uSel ? document.querySelector(uSel) : null;
-                
-                // If we explicitly see a logout button anywhere, we are definitely logged in.
-                if (logoutBtn) return 'success';
-                
-                var allBtns = document.querySelectorAll('a, button, input[type="submit"]');
-                for (var i = 0; i < allBtns.length; i++) {
-                    var txt = allBtns[i].textContent || '';
-                    var v = allBtns[i].value || '';
-                    if (txt.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1 || v.indexOf('\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C') !== -1 || txt.toLowerCase().indexOf('logout') !== -1) {
-                        return 'success';
-                    }
-                }
-                
                 // 2. Explicit Success Indicators
                 if ('$safeSuccess' !== '' && '$safeSuccess' !== 'null' && html.indexOf('$safeSuccess') !== -1) {
                    return 'success';
                 }
                 
-                if (loginBtn === null && lSel === '') {
-                    // It might be success if login button is gone, but we also check common dashboard text
-                    if (bodyText.indexOf('\u0627\u0644\u0648\u0642\u062A \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('remaining time') !== -1 || bodyText.indexOf('\u062A\u0641\u0627\u0635\u064A\u0644 \u0627\u0644\u0623\u0633\u062A\u062E\u062F\u0627\u0645') !== -1) {
-                        return 'success';
-                    }
+                // Fallback strict success checks
+                if (bodyText.indexOf('\u0627\u0644\u0648\u0642\u062A \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0645\u064A\u063A\u0628\u0627\u064A\u062A') !== -1 || bodyText.indexOf('\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1 || bodyText.indexOf('\u0627\u0644\u0645\u062A\u0628\u0642\u064A') !== -1) {
+                    return 'success';
                 }
                 
                 // 3. Intermediate logic check (Redirect page)
